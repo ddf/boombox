@@ -4,7 +4,7 @@ class Jam
   private PVector mPos;
   private float   mWidth, mHeight;
   private String  mName;
-  private AudioPlayer mAudio;
+  private AudioRecordingStream mAudio;
   
   Jam( String jamName, float x, float y )
   {
@@ -12,8 +12,7 @@ class Jam
     mWidth = 18.f;
     mHeight = 8.f;
     mName = jamName;
-    // don't load the player until we actually want to play it.
-    mAudio = null;
+    mAudio = minim.loadFileStream(jamName, 512, false);
   }
   
   void setPos( float x, float y )
@@ -53,18 +52,9 @@ class Jam
     rect( mPos.x, mPos.y, mWidth, mHeight );
   }
   
-  void play()
+  void queue()
   {
-    println("Playing " + mName);
-    mAudio = minim.loadFile( mName );
-    mAudio.loop();
-  }
-  
-  void eject()
-  {
-    mAudio.pause();
-    mAudio.close();
-    mAudio = null;
+    jamSyncer.queueJam( mAudio );
   }
 }
 

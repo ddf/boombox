@@ -2,10 +2,18 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
 import ddf.minim.ugens.*;
+import ddf.minim.spi.*;
 
+// audio junk
 Minim minim;
+JamSyncer jamSyncer;
+Gain  globalGain;
+AudioOutput mainOut;
+
+// visual junks
 Avatar player;
 Inventory inventory;
+
 // jams that are out in the world
 // just, like, minding their own business, yo
 ArrayList worldJams;
@@ -16,6 +24,11 @@ void setup()
   smooth();
   
   minim = new Minim(this);
+  mainOut = minim.getLineOut();
+  jamSyncer = new JamSyncer( 121.f );
+  globalGain = new Gain(0.f);
+  
+  jamSyncer.patch( globalGain ).patch( mainOut );
   
   player = new Avatar();
   inventory = new Inventory();

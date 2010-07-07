@@ -75,13 +75,9 @@ class Inventory
         break;
       }
     }
-    if ( clickedOn != null && clickedOn != mCurrentJam )
+    if ( clickedOn != null )
     {
-      if ( mCurrentJam != null )
-      {
-        mCurrentJam.eject();
-      }
-      clickedOn.play();
+      clickedOn.queue();
       mCurrentJam = clickedOn;
     }
   }
