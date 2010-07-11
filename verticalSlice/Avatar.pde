@@ -34,6 +34,11 @@ class Avatar
     mGoal.set( mPos.x, mPos.y, 0 );
   }
   
+  void setYPos( float y )
+  {
+    mPos.y = y;
+  }
+  
   PVector getPos()
   {
     return new PVector( mPos.x, mPos.y );
@@ -46,12 +51,28 @@ class Avatar
   
   void update( float dt )
   {
+    boolean onTheStage = theStage.theGround.pointInside( mPos );
+    boolean onElevator = elevator.getRect().pointInside( mPos );
+    
     PVector dir = new PVector( mXDir, mYDir );
     dir.normalize();
     dir.mult( mSpeed * dt );
     mPos.add( dir );
-    mPos.x = constrain( mPos.x, 0, width );
-    mPos.y = constrain( mPos.y, theStage.horizonHeight + 5, height - 5 ); 
+    
+    boolean leftTheStage = !theStage.theGround.pointInside( mPos );
+    boolean leftElevator = !elevator.getRect().pointInside( mPos );
+    if ( onTheStage && leftTheStage && !onElevator )
+    {
+      println("Constraining to stage.");
+      theStage.theGround.constrain( mPos );
+    }
+    else if ( onElevator && leftElevator )
+    {
+      println("Constraining to elevator.");
+      println("Before constrain: " + mPos.x + ", " + mPos.y);
+      elevator.getRect().constrain( mPos );
+      println("After constrain: " + mPos.x + ", " + mPos.y );
+    }
   }
   
   void draw()

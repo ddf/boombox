@@ -13,6 +13,9 @@ class JamSyncer extends UGen
   private ArrayList mToRemove;
   // a list of AudioRecordingStreams we should add at the end of a loop
   private ArrayList mToAdd;
+  // a dummy summer to bump the output count of active jams
+  // eventually I should switch to using this instead of mActive
+  private Summer mSink;
   
   // all of our loop listeners
   private ArrayList mLoopListeners;
@@ -32,6 +35,7 @@ class JamSyncer extends UGen
     mToRemove = new ArrayList();
     mToAdd = new ArrayList();
     mLoopListeners = new ArrayList();
+    mSink = new Summer();
     
     mSampleCount = 0;
     mMeasureCount = 0;
@@ -49,17 +53,17 @@ class JamSyncer extends UGen
     mLoopListeners.remove( ll );
   }
   
-  boolean willJamPlay( AudioRecordingStream jam )
+  boolean willJamPlay( FilePlayer jam )
   {
     return mToAdd.contains( jam );
   }
   
-  boolean willJamEject( AudioRecordingStream jam )
+  boolean willJamEject( FilePlayer jam )
   {
     return mToRemove.contains( jam );
   }
   
-  boolean isJamPlaying( AudioRecordingStream jam )
+  boolean isJamPlaying( FilePlayer jam )
   {
     return mActive.contains(jam);
   }
@@ -79,7 +83,7 @@ class JamSyncer extends UGen
     return mMeasureCount;
   }
   
-  void queueJam( AudioRecordingStream jam )
+  void queueJam( FilePlayer jam )
   {
     boolean bActive = mActive.contains(jam);
     if ( bActive == false && mToAdd.contains(jam) == false )
@@ -93,10 +97,9 @@ class JamSyncer extends UGen
     }
   }
   
-  void playJam( AudioRecordingStream jam )
+  void playJam( FilePlayer jam )
   {
     mActive.add( jam );
-    jam.play();
   }
   
   private void calcSamplesInMeasure()
@@ -128,10 +131,12 @@ class JamSyncer extends UGen
       channels[i] = 0;
     }
     
+    float[] samps = new float[channels.length];
+    
     for(int i = 0; i < mActive.size(); ++i)
     {
-      AudioStream as = (AudioStream)mActive.get(i);
-      float[] samps = as.read();
+      FilePlayer fp = (FilePlayer)mActive.get(i);
+      fp.tick( samps );
       for(int s = 0; s < samps.length; ++s)
       {
         channels[s] += samps[s];
@@ -141,7 +146,12 @@ class JamSyncer extends UGen
     if ( mSampleCount == mSamplesInMeasure )
     {
       // remove elements from our active list that are in our toBeRemoved list
-      mActive.removeAll( mToRemove );
+      for( int i = 0; i < mToRemove.size(); ++i )
+      {
+        FilePlayer fp = (FilePlayer)mToRemove.get(i);
+        fp.pause();
+        mActive.remove( fp );
+      }
       mToRemove.clear();
       
       mSampleCount = 0;
@@ -149,18 +159,18 @@ class JamSyncer extends UGen
       
       if ( mMeasureCount % 4 == 0 )
       {
-        for( int i = 0; i < mToAdd.size(); ++i)
+        for(int i = 0; i < mToAdd.size(); ++i)
         {
-          AudioRecordingStream ars = (AudioRecordingStream)mToAdd.get(i);
-          mActive.add( ars );
+          FilePlayer fp = (FilePlayer)mToAdd.get(i);
+          fp.patch( mSink );
+          mActive.add( fp );
         }
         mToAdd.clear();
         
         for( int i = 0; i < mActive.size(); ++i )
         {
-          AudioRecordingStream ars = (AudioRecordingStream)mActive.get(i);
-          ars.setMillisecondPosition(0);
-          ars.play();
+          FilePlayer fp = (FilePlayer)mActive.get(i);
+          fp.play(0);
         }
         
         for(int i = 0; i < mLoopListeners.size(); ++i)

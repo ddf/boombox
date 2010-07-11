@@ -1,9 +1,29 @@
 // helper class for drawing boxes and querying if a point is inside.
 class Rectangle
 {
+    
+  class Bounds
+  {
+    float minX, minY, maxX, maxY;
+    
+    boolean pointInside( float x, float y )
+    {
+      return ( x >= minX && x <= maxX && y >= minY && y <= maxY );
+    }
+    
+    void constrain( PVector pos )
+    {
+      pos.x = PApplet.constrain( pos.x, minX, maxX );
+      pos.y = PApplet.constrain( pos.y, minY, maxY );
+    }
+  }
+  
+  
   private int mHorzAlign, mVertAlign;
   private float mWidth, mHeight;
   private float mX, mY;
+  private Bounds mBounds;
+
   
   Rectangle( float x, float y, float w, float h, int ha, int va )
   {
@@ -13,26 +33,14 @@ class Rectangle
     mHeight = h;
     mHorzAlign = ha;
     mVertAlign = va;
+    mBounds = new Bounds();
+    calcBounds();
   }
   
   void draw()
   {
-    rectMode(CENTER);
-    float x = mX;
-    switch( mHorzAlign )
-    {
-      case LEFT: x += mWidth * 0.5f; break;
-      case RIGHT: x -= mWidth * 0.5f; break;
-    }
-    
-    float y = mY;
-    switch( mVertAlign )
-    {
-      case TOP: y += mHeight * 0.5f; break;
-      case BOTTOM: y -= mHeight * 0.5f; break;
-    }
-    
-    rect( x, y, mWidth, mHeight );
+    rectMode(CORNERS);
+    rect( mBounds.minX, mBounds.minY, mBounds.maxX, mBounds.maxY );
   }
   
   PVector getPos()
@@ -44,6 +52,12 @@ class Rectangle
   {
     mX = x;
     mY = y;
+    calcBounds();
+  }
+  
+  void constrain( PVector pos )
+  {
+    mBounds.constrain( pos );
   }
   
   boolean pointInside( PVector pos )
@@ -53,24 +67,27 @@ class Rectangle
   
   boolean pointInside( float x, float y )
   {
-    // assume LEFT / TOP
-    float minX = mX;
-    float minY = mY;
-    float maxX = mX + mWidth;
-    float maxY = mY + mHeight;
+    return mBounds.pointInside( x, y );
+  }
+  
+  void calcBounds()
+  {
+        // assume LEFT / TOP
+    mBounds.minX = mX;
+    mBounds.minY = mY;
+    mBounds.maxX = mX + mWidth;
+    mBounds.maxY = mY + mHeight;
     
     switch( mHorzAlign )
     {
-      case CENTER: minX -= mWidth * 0.5f; maxX -= mWidth * 0.5f; break;
-      case RIGHT: minX -= mWidth; maxX -= mWidth; break;
+      case CENTER: mBounds.minX -= mWidth * 0.5f; mBounds.maxX -= mWidth * 0.5f; break;
+      case RIGHT: mBounds.minX -= mWidth; mBounds.maxX -= mWidth; break;
     }
     
     switch( mVertAlign )
     {
-      case CENTER: minY -= mHeight * 0.5f; maxY -= mHeight * 0.5f; break;
-      case BOTTOM: minY -= mHeight; maxY -= mHeight; break;
+      case CENTER: mBounds.minY -= mHeight * 0.5f; mBounds.maxY -= mHeight * 0.5f; break;
+      case BOTTOM: mBounds.minY -= mHeight; mBounds.maxY -= mHeight; break;
     }
-    
-    return ( x > minX && x < maxX && y > minY && y < maxY );
   }
 }

@@ -1,8 +1,15 @@
 // the graphics for the environment
 class Stage
 {
+  // the walkable area for the player
+  Rectangle theGround;
   
   float horizonHeight = height * 0.7f;
+  
+  Stage()
+  {
+    theGround = new Rectangle( 0, horizonHeight + 5, width, height - horizonHeight - 10 , LEFT, TOP );
+  }
   
   void draw()
   {
@@ -38,6 +45,13 @@ class Stage
       strokeWeight(2);
       stroke(179, 183, 188);
       line( -10, horizonHeight, width+10, horizonHeight );
+    }
+    
+    // ground walkable space
+    {
+//      noStroke();
+//      fill(0, 64);
+//      theGround.draw();
     }
   }
 }

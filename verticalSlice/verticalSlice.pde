@@ -14,14 +14,23 @@ import ddf.minim.spi.*;
 
 // audio junk
 Minim minim;
+
+// our main audio path
 JamSyncer jamSyncer;
 Gain  globalGain;
 AudioOutput mainOut;
-AudioRecordingStream backing;
+
+// this plays all the time
+FilePlayer backing;
+
+// something to plug envelope followers into
+Summer envFollowSink;
+Multiplier sinkSilencer;
 
 // visual junks
 Avatar player;
 Dude   dude;
+Elevator elevator;
 Mouse  mouse;
 Inventory inventory;
 Stage     theStage;
@@ -39,10 +48,14 @@ void setup()
   jamSyncer = new JamSyncer( 121.f );
   globalGain = new Gain(0.f);
   
-  backing = minim.loadFileStream( "backing_loop.aif", 512, false );
+  backing = new FilePlayer( minim.loadFileStream( "backing_loop.aif", 512, false ) );
   jamSyncer.playJam( backing );
   
   jamSyncer.patch( globalGain ).patch( mainOut );
+  
+  envFollowSink = new Summer();
+  sinkSilencer = new Multiplier(0);
+  envFollowSink.patch( sinkSilencer ).patch( mainOut );
   
   worldJams = new ArrayList();
   
@@ -53,9 +66,13 @@ void setup()
   
   player = new Avatar( 50, height - 100 );
   dude = new Dude( 450, height - 50, new Jam[] { (Jam)worldJams.get(0), (Jam)worldJams.get(1) }, new Jam("LP01_blip.aif", color(128,255,0), 0, 0) );
+  
   mouse = new Mouse();
   inventory = new Inventory();
   theStage = new Stage();
+  
+  elevator = new Elevator( 200, theStage.horizonHeight + 15, 200, (Jam)worldJams.get(1) );
+  
 
   
   noCursor();
@@ -66,12 +83,15 @@ void draw()
   float dt = 1.f / frameRate;
   
   player.update( dt );
+  elevator.update( dt );
   inventory.update( dt );
   dude.update( dt );
   
   background(0);
   
   theStage.draw();
+  
+  elevator.draw();
   
   Iterator iter = worldJams.iterator();
   while ( iter.hasNext() )

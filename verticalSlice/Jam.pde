@@ -16,7 +16,7 @@ float getTapeHeight()
 
 class JamImage
 {
-  color mTint;
+  private color mTint;
   
   JamImage( color c )
   {
@@ -25,6 +25,11 @@ class JamImage
     {
       TAPE = loadImage("pixeltape.gif");
     }
+  }
+  
+  color getColor()
+  {
+    return mTint;
   }
   
   void draw( float x, float y )
@@ -42,7 +47,7 @@ class Jam
   private float   mWidth, mHeight;
   private JamImage mImage;
   private String  mName;
-  private AudioRecordingStream mAudio;
+  private FilePlayer mAudio;
   
   Jam( String jamName, color c, float x, float y )
   {
@@ -51,12 +56,23 @@ class Jam
     mHeight = 24.f;
     mImage = new JamImage(c);
     mName = jamName;
-    mAudio = minim.loadFileStream(jamName, 512, false);
+    mAudio = new FilePlayer( minim.loadFileStream(jamName, 512, false) );
+    mAudio.pause();
   }
   
   JamImage getImage()
   {
     return mImage;
+  }
+  
+  color getColor()
+  {
+    return mImage.getColor();
+  }
+  
+  FilePlayer getAudio()
+  {
+    return mAudio;
   }
   
   void setPos( float x, float y )
