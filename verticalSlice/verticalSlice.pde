@@ -32,7 +32,7 @@ ArrayList worldJams;
 
 void setup()
 {
-  size(1024, 768);
+  size(640, 480);
   
   minim = new Minim(this);
   mainOut = minim.getLineOut();
@@ -46,13 +46,13 @@ void setup()
   
   worldJams = new ArrayList();
   
-  worldJams.add( new Jam("LP01_drums.aif", color(255,128,0), 200, 600) );
-  worldJams.add( new Jam("LP01_bass.aif", color(0,255,200), 850, 700) );
+  worldJams.add( new Jam("LP01_drums.aif", color(255,128,0), 200, 440) );
+  worldJams.add( new Jam("LP01_bass.aif", color(0,255,200), 600, 400) );
 //  worldJams.add( new Jam("LP01_blip.aif", color(128,255,0), 200, 600) );
-  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 500, 750) );
+  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 300, 350) );
   
   player = new Avatar( 50, height - 100 );
-  dude = new Dude( 450, height - 150, new Jam[] { (Jam)worldJams.get(0), (Jam)worldJams.get(1) }, new Jam("LP01_blip.aif", color(128,255,0), 0, 0) );
+  dude = new Dude( 450, height - 50, new Jam[] { (Jam)worldJams.get(0), (Jam)worldJams.get(1) }, new Jam("LP01_blip.aif", color(128,255,0), 0, 0) );
   mouse = new Mouse();
   inventory = new Inventory();
   theStage = new Stage();
