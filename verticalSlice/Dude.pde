@@ -1,5 +1,5 @@
 // a Dude is someone who you can Jam with
-class Dude
+class Dude implements LoopListener
 {
   // our visible rectangle
   private Rectangle mRect;
@@ -11,6 +11,8 @@ class Dude
   private Jam     mMyJam;
   // have I already jammed?
   boolean         mJammed;
+  // how many times my jam has looped
+  private int     mLoops;
   // is the mouse over me?
   boolean         mMousedOver;
   // is the player close enough to click on me?
@@ -20,6 +22,13 @@ class Dude
   Wavetable mAnimCurve;
   // where in the wave for we look for our position offset
   float     mAnimCurveStep;
+  // which animation to do 
+  int       mAnimation;
+  
+  // different animations
+  static final int IDLE = 0;
+  static final int SHAKE = 1;
+  static final int JUMP = 2;
   
   Dude( float x, float y, Jam[] wantToHear, Jam toPlay )
   {
@@ -27,10 +36,13 @@ class Dude
     mJamArea = new Rectangle( x, y, 256, 64, CENTER, CENTER );
     mWantToHear = wantToHear;
     mMyJam = toPlay;
+    
     mJammed = false;
+    mLoops = 0;
     
     mAnimCurve = Waves.TRIANGLE;
     mAnimCurveStep = 1.f;
+    mAnimation = IDLE;
   }
   
   PVector getPos()
@@ -62,6 +74,7 @@ class Dude
       if ( mAnimCurveStep > 1.f )
       {
         mAnimCurveStep = 1.f;
+        mAnimation = IDLE;
       }
     }
   }
@@ -78,16 +91,28 @@ class Dude
           println("Something I want to hear isn't playing!");
           // trigger the head shake anim
           mAnimCurveStep = 0.f;
+          mAnimation = SHAKE;
           return;   
         }
       }
       
       // yes all good
       mJammed = true;
+      mAnimCurveStep = 0.f;
+      mAnimation = JUMP;
       mMyJam.queue();
-      
-      // and give it right away for now
+      jamSyncer.addLoopListener( this );
+    }
+  }
+  
+  void looped()
+  {
+    mLoops++;
+    if ( mLoops == 2 )
+    {
       inventory.addJam( mMyJam );
+      mMyJam = null;
+      jamSyncer.removeLoopListener( this );
     }
   }
   
@@ -99,7 +124,15 @@ class Dude
     
     pushMatrix();
     {
-      translate( mAnimCurve.value( mAnimCurveStep ) * 5.f, 0 );
+      if ( mAnimation == SHAKE )
+      {
+        translate( mAnimCurve.value( mAnimCurveStep ) * 5.f, 0 );
+      }
+      else 
+      if ( mAnimation == JUMP )
+      {
+        translate( 0, abs( mAnimCurve.value( mAnimCurveStep ) ) * -10.f );
+      }
       mRect.draw();
     }
     popMatrix();
@@ -107,7 +140,7 @@ class Dude
 //    fill(0, 64);
 //    mJamArea.draw();
     
-    if ( mJammed == false )
+    if ( mMyJam != null )
     {
       PVector pos = mRect.getPos();
       
@@ -124,12 +157,21 @@ class Dude
       float bubbleCenterY = pos.y - 140;
       rect( pos.x, bubbleCenterY, bubbleWidth, bubbleHeight );
       
-      float startX = pos.x - (bubbleWidth*0.5f) + (getTapeWidth()*0.5f) + 8;
-      for(int i = 0; i < mWantToHear.length; i++)
+      // these are the tapes in the bubble
+      if ( mJammed == false )
       {
-        JamImage img = mWantToHear[i].getImage();
-        float offsetX = i * (getTapeWidth()+5);
-        img.draw( startX + offsetX, bubbleCenterY );
+        float startX = pos.x - (bubbleWidth*0.5f) + (getTapeWidth()*0.5f) + 8;
+        for(int i = 0; i < mWantToHear.length; i++)
+        {
+          JamImage img = mWantToHear[i].getImage();
+          float offsetX = i * (getTapeWidth()+5);
+          img.draw( startX + offsetX, bubbleCenterY );
+        }
+      }
+      else
+      {
+        mMyJam.setPos( pos.x, bubbleCenterY );
+        mMyJam.draw();
       }
     }
   }

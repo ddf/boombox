@@ -1,3 +1,9 @@
+// an interface to implement if you want to get called when the loop begins
+interface LoopListener
+{
+  void looped();
+}
+
 // a UGen to sync all of the Jams
 class JamSyncer extends UGen
 {
@@ -7,6 +13,9 @@ class JamSyncer extends UGen
   private ArrayList mToRemove;
   // a list of AudioRecordingStreams we should add at the end of a loop
   private ArrayList mToAdd;
+  
+  // all of our loop listeners
+  private ArrayList mLoopListeners;
   
   // where we are at in the sample count for one measure
   private int       mSampleCount;
@@ -22,11 +31,22 @@ class JamSyncer extends UGen
     mActive = new ArrayList();
     mToRemove = new ArrayList();
     mToAdd = new ArrayList();
+    mLoopListeners = new ArrayList();
     
     mSampleCount = 0;
     mMeasureCount = 0;
     mSamplesInMeasure = 0;
     mBPM = bpm;
+  }
+  
+  void addLoopListener( LoopListener ll )
+  {
+    mLoopListeners.add( ll );
+  }
+  
+  void removeLoopListener( LoopListener ll )
+  {
+    mLoopListeners.remove( ll );
   }
   
   boolean willJamPlay( AudioRecordingStream jam )
@@ -44,6 +64,21 @@ class JamSyncer extends UGen
     return mActive.contains(jam);
   }
   
+  int getSampleCount()
+  {
+    return mSampleCount;
+  }
+  
+  int getLength()
+  {
+    return mSamplesInMeasure;
+  }
+  
+  int getMeasureCount()
+  {
+    return mMeasureCount;
+  }
+  
   void queueJam( AudioRecordingStream jam )
   {
     boolean bActive = mActive.contains(jam);
@@ -56,6 +91,12 @@ class JamSyncer extends UGen
     {
       mToRemove.add( jam );
     }
+  }
+  
+  void playJam( AudioRecordingStream jam )
+  {
+    mActive.add( jam );
+    jam.play();
   }
   
   private void calcSamplesInMeasure()
@@ -120,6 +161,12 @@ class JamSyncer extends UGen
           AudioRecordingStream ars = (AudioRecordingStream)mActive.get(i);
           ars.setMillisecondPosition(0);
           ars.play();
+        }
+        
+        for(int i = 0; i < mLoopListeners.size(); ++i)
+        {
+          LoopListener ll = (LoopListener)mLoopListeners.get(i);
+          ll.looped();
         }
       }
     }

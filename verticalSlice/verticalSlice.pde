@@ -9,6 +9,7 @@ Minim minim;
 JamSyncer jamSyncer;
 Gain  globalGain;
 AudioOutput mainOut;
+AudioRecordingStream backing;
 
 // visual junks
 Avatar player;
@@ -30,6 +31,9 @@ void setup()
   jamSyncer = new JamSyncer( 121.f );
   globalGain = new Gain(0.f);
   
+  backing = minim.loadFileStream( "backing_loop.aif", 512, false );
+  jamSyncer.playJam( backing );
+  
   jamSyncer.patch( globalGain ).patch( mainOut );
   
   worldJams = new ArrayList();
@@ -37,7 +41,7 @@ void setup()
   worldJams.add( new Jam("LP01_drums.aif", color(255,128,0), 200, 600) );
   worldJams.add( new Jam("LP01_bass.aif", color(0,255,200), 850, 700) );
 //  worldJams.add( new Jam("LP01_blip.aif", color(128,255,0), 200, 600) );
-//  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 900, 300) );
+  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 500, 750) );
   
   player = new Avatar( 50, height - 100 );
   dude = new Dude( 450, height - 150, new Jam[] { (Jam)worldJams.get(0), (Jam)worldJams.get(1) }, new Jam("LP01_blip.aif", color(128,255,0), 0, 0) );

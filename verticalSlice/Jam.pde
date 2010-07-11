@@ -89,6 +89,14 @@ class Jam
     stroke(255,255,255);
     if ( willPlay() )
     {
+      strokeWeight(1);
+      fill(0);
+      float scount = jamSyncer.getSampleCount() + (jamSyncer.getMeasureCount() % 4) * jamSyncer.getLength();
+      float totalSamp = jamSyncer.getLength() * 4;
+      // println("scount = " + scount + " and totalSamp is " + totalSamp);
+      float angle = map( scount, 0, totalSamp, 0, radians(360) );
+      arc( mPos.x, mPos.y, 20, 20, -PI/2, -PI/2 + angle );
+      strokeWeight(2);
       line( mPos.x - 5, mPos.y, mPos.x + 5, mPos.y );
       line( mPos.x, mPos.y + 5, mPos.x, mPos.y - 5 );
     }
