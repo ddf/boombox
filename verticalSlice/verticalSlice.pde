@@ -1,3 +1,11 @@
+/** <br/>
+  * Use WASD to move around. <br/>
+  * Pick up Jams (the cassettes) by walking over them.<br/>
+  * Click on a Jam in your inventory at the top of the screen to play it or eject it.<br/>
+  * Stand next to the green dude and click on him to Jam together. <br/>
+  * Mix and match your Jams to make a Fresh Tune.
+  */
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
