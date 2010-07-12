@@ -150,6 +150,7 @@ class JamSyncer extends UGen
       {
         FilePlayer fp = (FilePlayer)mToRemove.get(i);
         fp.pause();
+        fp.unpatch( mSink );
         mActive.remove( fp );
       }
       mToRemove.clear();

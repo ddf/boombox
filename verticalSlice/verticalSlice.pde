@@ -59,10 +59,10 @@ void setup()
   
   worldJams = new ArrayList();
   
-  worldJams.add( new Jam("LP01_drums.aif", color(255,128,0), 200, 440) );
+  worldJams.add( new Jam("LP01_drums.aif", color(255,128,0), 580, 120) );
   worldJams.add( new Jam("LP01_bass.aif", color(0,255,200), 600, 400) );
 //  worldJams.add( new Jam("LP01_blip.aif", color(128,255,0), 200, 600) );
-  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 300, 350) );
+  worldJams.add( new Jam("LP01_pad.aif", color(64,0,128), 100, 450) );
   
   player = new Avatar( 50, height - 100 );
   dude = new Dude( 450, height - 50, new Jam[] { (Jam)worldJams.get(0), (Jam)worldJams.get(1) }, new Jam("LP01_blip.aif", color(128,255,0), 0, 0) );
@@ -71,8 +71,8 @@ void setup()
   inventory = new Inventory();
   theStage = new Stage();
   
-  elevator = new Elevator( 200, theStage.horizonHeight + 15, 200, (Jam)worldJams.get(1) );
-  
+  elevator = new Elevator( 200, theStage.horizonHeight + 5, 210, (Jam)worldJams.get(1) );
+  theStage.thePlatform = new Rectangle( 250, theStage.horizonHeight - 205, width - 250, 2, LEFT, TOP );
 
   
   noCursor();

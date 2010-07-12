@@ -51,28 +51,36 @@ class Avatar
   
   void update( float dt )
   {
-    boolean onTheStage = theStage.theGround.pointInside( mPos );
-    boolean onElevator = elevator.getRect().pointInside( mPos );
+    boolean wasOnTheStage = theStage.theGround.pointInside( mPos );
+    boolean wasOnElevator = elevator.getRect().pointInside( mPos );
+    boolean wasOnPlatform = theStage.thePlatform.pointInside( mPos );
     
     PVector dir = new PVector( mXDir, mYDir );
     dir.normalize();
     dir.mult( mSpeed * dt );
-    mPos.add( dir );
+   
+    // where we hope to wind up
+    PVector newPos = new PVector( mPos.x + dir.x, mPos.y + dir.y );
+
+    // is this an unacceptable place?
+    if ( !theStage.theGround.pointInside( newPos ) && !elevator.getRect().pointInside( newPos ) && !theStage.thePlatform.pointInside( newPos ) )
+    {
+      // ok, constrain to the last place we were, checking from "top" to "bottom"
+      if ( wasOnElevator )
+      {
+        elevator.getRect().constrain( newPos );
+      }
+      else if ( wasOnPlatform )
+      {
+        theStage.thePlatform.constrain( newPos );
+      }
+      else if ( wasOnTheStage )
+      {
+        theStage.theGround.constrain( newPos );
+      }
+    }
     
-    boolean leftTheStage = !theStage.theGround.pointInside( mPos );
-    boolean leftElevator = !elevator.getRect().pointInside( mPos );
-    if ( onTheStage && leftTheStage && !onElevator )
-    {
-      println("Constraining to stage.");
-      theStage.theGround.constrain( mPos );
-    }
-    else if ( onElevator && leftElevator )
-    {
-      println("Constraining to elevator.");
-      println("Before constrain: " + mPos.x + ", " + mPos.y);
-      elevator.getRect().constrain( mPos );
-      println("After constrain: " + mPos.x + ", " + mPos.y );
-    }
+    mPos.set( newPos );
   }
   
   void draw()

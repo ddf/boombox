@@ -8,7 +8,7 @@ class Elevator
   
   Elevator( float x, float y, float maxVertDisp, Jam jamToFollow )
   {
-    mRect = new Rectangle( x, y, 100, 20, CENTER, BOTTOM );
+    mRect = new Rectangle( x, y - 20, 100, 6, CENTER, TOP );
     mX = x;
     mMaxY = y;
     mMinY = mMaxY - maxVertDisp;
@@ -38,9 +38,16 @@ class Elevator
   
   void draw()
   { 
+    rectMode(CORNERS);
     stroke(0);
     strokeWeight(2);
     fill(mColor);
-    mRect.draw();
+    Rectangle.Bounds bounds = mRect.getBounds();
+    rect( bounds.minX, bounds.minY, bounds.maxX, bounds.maxY + 20 );
+    
+    // our "collision"
+//    noStroke();
+//    fill(0,0,255);
+//    mRect.draw();
   }
 }

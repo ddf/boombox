@@ -55,6 +55,11 @@ class Rectangle
     calcBounds();
   }
   
+  Bounds getBounds()
+  {
+    return mBounds;
+  }
+  
   void constrain( PVector pos )
   {
     mBounds.constrain( pos );

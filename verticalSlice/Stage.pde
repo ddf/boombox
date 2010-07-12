@@ -3,17 +3,24 @@ class Stage
 {
   // the walkable area for the player
   Rectangle theGround;
+  Rectangle thePlatform;
+  
+  FFT mFFT;
   
   float horizonHeight = height * 0.7f;
   
   Stage()
   {
     theGround = new Rectangle( 0, horizonHeight + 5, width, height - horizonHeight - 10 , LEFT, TOP );
+    
+    mFFT = new FFT( mainOut.bufferSize(), mainOut.sampleRate() );
+    mFFT.logAverages( 20, 4 );
   }
   
   void draw()
   {
-    rectMode(CORNER);
+    rectMode(CORNERS);
+    
     // the sky
     {
       noStroke();
@@ -21,11 +28,45 @@ class Stage
       rect(0, 0, width, height);
     }
     
+    rectMode(CENTER);
+    
+    // subtle equalizer clouds
+    {
+      float leftBuff = 25.f;
+      float barWidth = 25.f;
+      float barHeight = 25.f;
+      noStroke();
+      fill( 125, 168, 245 );
+      mFFT.forward( mainOut.mix );
+      int startAt = 7;
+      for(int i = 0; i < mFFT.avgSize() - startAt; ++i)
+      {
+        float x = 25 + barWidth * i + leftBuff * i;
+        float y = horizonHeight - 120 - i * 4.3f;
+        float s = mFFT.getAvg(i+startAt) * 0.5f;
+        rect( x, y, barWidth + s, barHeight + s ); 
+      }
+    }
+    
+    rectMode(CORNERS);
+    
     // the ground
     {
       noStroke();
       fill(105, 122, 144);
       rect( -10, horizonHeight, width + 10, height + 10);
+    }
+    
+    // the platform
+    {
+      noStroke();
+      fill(105, 122, 144);
+      Rectangle.Bounds plat = thePlatform.getBounds();
+      rect( plat.minX, plat.minY, plat.maxX, plat.maxY + 10 );
+      
+      strokeWeight(2);
+      stroke(179, 183, 188);
+      line( plat.minX, plat.minY, width, plat.minY );
     }
     
     // sidewalk cracks
@@ -52,6 +93,13 @@ class Stage
 //      noStroke();
 //      fill(0, 64);
 //      theGround.draw();
+    }
+    
+    // the platform walkable space
+    {
+//      noStroke();
+//      fill(0, 64);
+//      thePlatform.draw();
     }
   }
 }
