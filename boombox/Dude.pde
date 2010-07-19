@@ -60,7 +60,7 @@ class Dude implements LoopListener
       {
         mCanClick = mJamArea.pointInside( player.getPos() );
         
-        if ( mCanClick && mRect.pointInside( mouseX, mouseY ) )
+        if ( mCanClick && mRect.pointInside( mouseX + cameraOffset, mouseY ) )
         {
           mMousedOver = true;
           mouse.setState( Mouse.JAM );

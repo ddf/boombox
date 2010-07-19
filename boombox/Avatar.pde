@@ -50,35 +50,33 @@ class Avatar
   }
   
   void update( float dt )
-  {
-    boolean wasOnTheStage = theStage.theGround.pointInside( mPos );
-    boolean wasOnElevator = elevator.getRect().pointInside( mPos );
-    boolean wasOnPlatform = theStage.thePlatform.pointInside( mPos );
-    
+  { 
     PVector dir = new PVector( mXDir, mYDir );
     dir.normalize();
     dir.mult( mSpeed * dt );
    
     // where we hope to wind up
     PVector newPos = new PVector( mPos.x + dir.x, mPos.y + dir.y );
+    
+    theStage.constrainMovement( mPos, newPos );
 
     // is this an unacceptable place?
-    if ( !theStage.theGround.pointInside( newPos ) && !elevator.getRect().pointInside( newPos ) && !theStage.thePlatform.pointInside( newPos ) )
-    {
-      // ok, constrain to the last place we were, checking from "top" to "bottom"
-      if ( wasOnElevator )
-      {
-        elevator.getRect().constrain( newPos );
-      }
-      else if ( wasOnPlatform )
-      {
-        theStage.thePlatform.constrain( newPos );
-      }
-      else if ( wasOnTheStage )
-      {
-        theStage.theGround.constrain( newPos );
-      }
-    }
+//    if ( !theStage.theGround.pointInside( newPos ) && !elevator.getRect().pointInside( newPos ) && !theStage.thePlatform.pointInside( newPos ) )
+//    {
+//      // ok, constrain to the last place we were, checking from "top" to "bottom"
+//      if ( wasOnElevator )
+//      {
+//        elevator.getRect().constrain( newPos );
+//      }
+//      else if ( wasOnPlatform )
+//      {
+//        theStage.thePlatform.constrain( newPos );
+//      }
+//      else if ( wasOnTheStage )
+//      {
+//        theStage.theGround.constrain( newPos );
+//      }
+//    }
     
     mPos.set( newPos );
   }

@@ -12,7 +12,7 @@ import ddf.minim.effects.*;
 import ddf.minim.ugens.*;
 import ddf.minim.spi.*;
 
-boolean DRAW_COLLISION = true;
+boolean DRAW_COLLISION = false;
 color   COLLISION_COLOR = color(0, 255, 0, 128);
 
 // audio junk
@@ -48,6 +48,8 @@ ArrayList<Jam> worldJams;
 
 // where my camera at
 float cameraPosition = 0;
+// what is my camera's offset from where it started?
+float cameraOffset = 0;
 
 void setup()
 {
@@ -59,7 +61,7 @@ void setup()
   globalGain = new Gain(0.f);
   
   backing = new FilePlayer( minim.loadFileStream( "backing_loop.aif", 512, false ) );
-  // jamSyncer.playJam( backing );
+  jamSyncer.playJam( backing );
   
   jamSyncer.patch( globalGain ).patch( mainOut );
   
@@ -69,15 +71,28 @@ void setup()
   
   allJams = new ArrayList<Jam>();
  
-  allJams.add( new Jam("backing_loop.aif" color(0,0,0), -100, -100 );
+  allJams.add( new Jam("backing_loop.aif", color(0,0,0), -100, -100 ) );
   allJams.add( new Jam("LP01_drums.aif", color(255,128,0), 580, 120) );
   allJams.add( new Jam("LP01_bass.aif", color(0,255,200), 600, 400) );
   allJams.add( new Jam("LP01_blip.aif", color(128,255,0), 200, 600) );
   allJams.add( new Jam("LP01_pad.aif", color(64,0,128), 100, 450) );
+  allJams.add( new Jam("LP01_drums.aif", color(128,64,0), 580, 120) );
+  allJams.add( new Jam("LP01_bass.aif", color(0,200,64), 600, 400) );
+  allJams.add( new Jam("LP01_blip.aif", color(64,160,0), 200, 600) );
+  allJams.add( new Jam("LP01_pad.aif", color(128,0,64), 100, 450) );
+  allJams.add( new Jam("LP01_drums.aif", color(128,128,0), 580, 120) );
+  allJams.add( new Jam("LP01_bass.aif", color(0,128,64), 600, 400) );
+  allJams.add( new Jam("LP01_blip.aif", color(64,128,0), 200, 600) );
+  allJams.add( new Jam("LP01_pad.aif", color(255,23,128), 100, 450) );
   
   worldJams = new ArrayList<Jam>();
+  
   worldJams.add( allJams.get(1) );
   worldJams.add( allJams.get(3) );
+  worldJams.add( allJams.get(5) );
+  worldJams.add( allJams.get(8) );
+  worldJams.add( allJams.get(9) );
+  worldJams.add( allJams.get(11));
   
   player = new Avatar( 50, height - 100 );
   
@@ -97,32 +112,6 @@ void draw()
   theStage.update( dt );
   player.update( dt );
   inventory.update( dt );
-  
-  background(0);
-  
-  // will also draw the player sorted properly with stage elements
-  theStage.draw();
-  
-  Iterator iter = worldJams.iterator();
-  while ( iter.hasNext() )
-  {
-    Jam j = iter.next();
-    
-    if ( player.getPos().dist( j.getPos() ) < player.getSize() )
-    {
-      iter.remove();
-      inventory.addJam( j );
-    }
-    else
-    {
-      j.draw();
-    }
-  }
-  
-  inventory.draw();
-  
-  // mouse appearance
-  mouse.draw();
   
   float playerX = player.getPos().x;
   float distToCamera = abs( playerX - cameraPosition );
@@ -150,7 +139,8 @@ void draw()
     }
   }
   
-  cameraPosition = constrain( cameraPosition, width/2, 20000 );
+  cameraPosition = constrain( cameraPosition, width/2, theStage.moreGround.getBounds().maxX - width/2 );
+  cameraOffset = cameraPosition - width/2;
   
 //  fill(255,0,0);
 //  noStroke();
@@ -158,12 +148,45 @@ void draw()
 //  rect( cameraPosition, height/2.0, 5, 5 );
   
   camera( cameraPosition, height/2.0, (height/2.0) / tan(PI*60.0 / 360.0), cameraPosition, height/2.0, 0, 0, 1, 0);
+  
+  background(0);
+  
+  // will also draw the player sorted properly with stage elements
+  theStage.draw();
+  
+  Iterator<Jam> iter = worldJams.iterator();
+  while ( iter.hasNext() )
+  {
+    Jam j = iter.next();
+    
+    if ( player.getPos().dist( j.getPos() ) < player.getSize() )
+    {
+      iter.remove();
+      inventory.addJam( j );
+    }
+    else
+    {
+      j.draw();
+    }
+  }
+  
+  translate( cameraPosition - width/2, 0, 0 );
+
+  // jams we can play  
+  inventory.draw();
+
+  // mouse appearance
+  mouse.draw();
 }
 
 void mousePressed()
 {
   inventory.mousePressed();
-  dude.mousePressed();
+  for(int i = 0; i < theStage.mDudes.size(); i++ )
+  {
+    Dude dude = theStage.mDudes.get(i);
+    dude.mousePressed();
+  }
 }
 
 void mouseMoved()

@@ -13,7 +13,7 @@ class Elevator
     mMaxY = y;
     mMinY = mMaxY - maxVertDisp;
     mColor = jamToFollow.getColor();
-    mFollower = new EnvelopeFollower( 0.05f, 1.0f, 512 ); // attack, release, buffersize
+    mFollower = new EnvelopeFollower( 0.05f, 2.0f, 512 ); // attack, release, buffersize
     jamToFollow.getAudio().patch( mFollower ).patch( envFollowSink );
   }
   
@@ -24,7 +24,7 @@ class Elevator
   
   void update( float dt )
   {
-    float y = constrain( mMaxY - mFollower.getLastValues()[0] * 5000.f, mMinY, mMaxY );
+    float y = constrain( mMaxY - mFollower.getLastValues()[0] * 10000.f, mMinY, mMaxY );
     
     PVector playerPos = player.getPos();
     if ( mRect.pointInside( playerPos ) )
