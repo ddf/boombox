@@ -44,19 +44,15 @@ class Stage
       
       // this goes on the platform
       allJams.get(3).setPos( 440, 150 );
-      Rectangle platform = new Rectangle( 400, 160, 460, 2, LEFT, TOP );
+      Rectangle platform = makePlatform( 400, 160, 460 );
       Elevator elevator = new Elevator( 910, topOfGround, topOfGround - 160, allJams.get(2) ); 
       
-      theGround.AdjacentRects.add( elevator.getRect() );
-      elevator.getRect().AdjacentRects.add( platform );
-      elevator.getRect().AdjacentRects.add( theGround );
-      platform.AdjacentRects.add( elevator.getRect() );
+      connect( theGround, elevator );
+      connect( elevator, platform );
       
       mElevators.add( elevator );
-      mPlatforms.add( platform );
       
       mCollision.add( elevator.getRect() );
-      mCollision.add( platform );
     }
     
     {
@@ -67,129 +63,120 @@ class Stage
       
       allJams.get(5).setPos( 1500, 450 );
       
-      Rectangle platform = new Rectangle( 1200, 220, 400, 2, LEFT, TOP );
+      Rectangle platform = makePlatform( 1200, 220, 400 );
       Elevator elevLeft = new Elevator( 1150, topOfGround, topOfGround - 220, allJams.get(4) );
       Elevator elevRight = new Elevator( 1650, topOfGround, topOfGround - 220, allJams.get(4) );
       
-      theGround.AdjacentRects.add( elevLeft.getRect() );
-      theGround.AdjacentRects.add( elevRight.getRect() );
-      
-      platform.AdjacentRects.add( elevLeft.getRect() );
-      platform.AdjacentRects.add( elevRight.getRect() );
-      
-      elevLeft.getRect().AdjacentRects.add( platform );
-      elevLeft.getRect().AdjacentRects.add( theGround );
-      
-      elevRight.getRect().AdjacentRects.add( platform );
-      elevRight.getRect().AdjacentRects.add( theGround );
+      connect( theGround, elevLeft );
+      connect( elevLeft, platform );
+      connect( platform, elevRight );
+      connect( elevRight, theGround );
       
       mElevators.add( elevLeft );
       mElevators.add( elevRight );
       
-      mPlatforms.add( platform );
-      
       mCollision.add( elevLeft.getRect() );
       mCollision.add( elevRight.getRect() );
-      mCollision.add( platform );
     }
           
     {
       allJams.get(11).setPos( 2000, 400 );
       
-      Rectangle platform = new Rectangle( 2100, 220, 350, 2, LEFT, TOP );
+      Rectangle platform = makePlatform( 2100, 220, 350 );
       Elevator elevLeft = new Elevator( 2050, topOfGround, topOfGround - 220, allJams.get(5) );
       Elevator elevRight = new Elevator( 2500, topOfGround, topOfGround - 220, allJams.get(5) );
       
-      theGround.AdjacentRects.add( elevLeft.getRect() );
-      elevLeft.getRect().AdjacentRects.add( theGround );
-      elevLeft.getRect().AdjacentRects.add( platform );
-      
-      platform.AdjacentRects.add( elevLeft.getRect() );
-      platform.AdjacentRects.add( elevRight.getRect() );
-      
-      elevRight.getRect().AdjacentRects.add( platform );
-      elevRight.getRect().AdjacentRects.add( moreGround );
+      connect( theGround, elevLeft );
+      connect( elevLeft, platform );
+      connect( platform, elevRight );
+      connect( elevRight, moreGround );
       
       mElevators.add( elevLeft );
       mElevators.add( elevRight );
       
-      mPlatforms.add( platform );
-      
       mCollision.add( elevLeft.getRect() );
       mCollision.add( elevRight.getRect() );
-      mCollision.add( platform );
     }
     
     {
       allJams.get(8).setPos( 2850, 400 );
       
       Dude dudeGround = new Dude( 2550, 470, new Jam[] { allJams.get(3), allJams.get(6), allJams.get(8) }, allJams.get(7) );
-      Dude dudePlatform = new Dude( 3075, 225, new Jam[] { allJams.get(1), allJams.get(2), allJams.get(5), allJams.get(6), allJams.get(11) }, allJams.get(12) );
+      Dude dudePlatform = new Dude( 3075, 225, new Jam[] { allJams.get(9), allJams.get(2), allJams.get(11), allJams.get(4), allJams.get(8) }, allJams.get(12) );
       
       mDudes.add( dudeGround );
       mDudes.add( dudePlatform );
       
-      Rectangle leftPlat = new Rectangle( 2675, 125, 2900 - 2675, 2, LEFT, TOP );
-      Rectangle rightPlat = new Rectangle( 3000, 225, 150, 2, LEFT, TOP );
+      Rectangle leftPlat = makePlatform( 2675, 125, 2900 - 2675 );
+      Rectangle rightPlat = makePlatform( 3000, 225, 150 );
       
-      Elevator elevLow = new Elevator( 2625, topOfGround, topOfGround - 125, allJams.get(7) );
-      Elevator elevHigh = new Elevator( 2950, 225, 100, allJams.get(10) );
+      Elevator elevLow = new Elevator( 2625, topOfGround, topOfGround - 125, allJams.get(10) );
+      Elevator elevHigh = new Elevator( 2950, 223, 102, allJams.get(7) );
       
-      connect( moreGround, elevLow.getRect() );
-      connect( elevLow.getRect(), leftPlat );
-      connect( leftPlat, elevHigh.getRect() );
-      connect( elevHigh.getRect(), rightPlat );
+      connect( moreGround, elevLow );
+      connect( elevLow, leftPlat );
+      connect( leftPlat, elevHigh );
+      connect( elevHigh, rightPlat );
     
       mElevators.add( elevLow );
       mElevators.add( elevHigh );
-      
-      mPlatforms.add( leftPlat );
-      mPlatforms.add( rightPlat );
     
       mCollision.add( elevLow.getRect() );
       mCollision.add( elevHigh.getRect() );
-      mCollision.add( leftPlat );
-      mCollision.add( rightPlat );   
     }
     
     {
       allJams.get(9).setPos( 3750, 120 );
       
-      Dude dude = new Dude( 3675, 450, new Jam[] { allJams.get(4), allJams.get(5), allJams.get(9) }, allJams.get(10) );
+      Dude dude = new Dude( 3675, 450, new Jam[] { allJams.get(4), allJams.get(5), allJams.get(3) }, allJams.get(10) );
       
       mDudes.add( dude );
       
-      Rectangle leftPlat = new Rectangle( 3400, 225, 150, 2, LEFT, TOP );
-      Rectangle rightPlat = new Rectangle( 3650, 125, 150, 2, LEFT, TOP );
+      Rectangle leftPlat = makePlatform( 3400, 225, 150 );
+      Rectangle rightPlat = makePlatform( 3650, 125, 150 );
       
       Elevator elevLow = new Elevator( 3350, topOfGround, topOfGround - 225, allJams.get(1) );
       Elevator elevHigh = new Elevator( 3600, 225, 100, allJams.get(6) );
       
-      connect( moreGround, elevLow.getRect() );
-      connect( elevLow.getRect(), leftPlat );
-      connect( leftPlat, elevHigh.getRect() );
-      connect( elevHigh.getRect(), rightPlat );
+      connect( moreGround, elevLow );
+      connect( elevLow, leftPlat );
+      connect( leftPlat, elevHigh );
+      connect( elevHigh, rightPlat );
     
       mElevators.add( elevLow );
       mElevators.add( elevHigh );
-      
-      mPlatforms.add( leftPlat );
-      mPlatforms.add( rightPlat );
     
       mCollision.add( elevLow.getRect() );
       mCollision.add( elevHigh.getRect() );
-      mCollision.add( leftPlat );
-      mCollision.add( rightPlat );         
     }
     
     mFFT = new FFT( mainOut.bufferSize(), mainOut.sampleRate() );
     mFFT.logAverages( 20, 4 );
   }
   
+  Rectangle makePlatform( float x, float y, float w )
+  {
+     Rectangle platform = new Rectangle( x, y, w, 8, LEFT, TOP );
+     mPlatforms.add( platform );
+     mCollision.add( platform );
+     
+     return platform;
+  }
+  
   private void connect( Rectangle a, Rectangle b )
   {
     a.AdjacentRects.add( b );
     b.AdjacentRects.add( a );
+  }
+  
+  private void connect( Elevator e, Rectangle b )
+  {
+    connect( e.getRect(), b );
+  }
+  
+  private void connect( Rectangle a, Elevator e )
+  {
+    connect( a, e.getRect() );
   }
 
   
@@ -340,14 +327,32 @@ class Stage
       mElevators.get(i).draw();
     }
     
-    // DUDES
+    // sort DUDES and Player
     {
+      ArrayList<Dude> dudesBehind = new ArrayList<Dude>();
+      ArrayList<Dude> dudesInFront = new ArrayList<Dude>();
       for(int i = 0; i < mDudes.size(); i++)
       {
-        mDudes.get(i).draw();
+        if ( mDudes.get(i).getPos().y <= player.getPos().y )
+        {
+          dudesBehind.add( mDudes.get(i) );
+        }
+        else
+        {
+          dudesInFront.add( mDudes.get(i) );
+        }
+      }
+      
+      for(int i = 0; i < dudesBehind.size(); i++)
+      {
+        dudesBehind.get(i).draw();
+      }
+      player.draw();
+      for(int i = 0; i < dudesInFront.size(); i++)
+      {
+        dudesInFront.get(i).draw();
       }
     }
     
-    player.draw();
   }
 }

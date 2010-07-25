@@ -6,6 +6,14 @@ class Rectangle
   {
     float minX, minY, maxX, maxY;
     
+    Bounds( float x1, float y1, float x2, float y2 )
+    {
+      minX = x1;
+      minY = y1;
+      maxX = x2;
+      maxY = y2;
+    }
+    
     boolean pointInside( float x, float y )
     {
       return ( x >= minX && x <= maxX && y >= minY && y <= maxY );
@@ -36,7 +44,7 @@ class Rectangle
     mHorzAlign = ha;
     mVertAlign = va;
     AdjacentRects = new ArrayList<Rectangle>();
-    mBounds = new Bounds();
+    mBounds = new Bounds(0,0,0,0);
     calcBounds();
   }
   

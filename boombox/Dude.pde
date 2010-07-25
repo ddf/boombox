@@ -152,7 +152,7 @@ class Dude implements LoopListener
       rect( pos.x + 5, pos.y - 75, 5, 5 );
       rect( pos.x + 15, pos.y - 95, 10, 10 );
       
-      float bubbleWidth = getTapeWidth() * mWantToHear.length + 20;
+      float bubbleWidth = getTapeWidth() * mWantToHear.length + 5 * mWantToHear.length + 10;
       float bubbleHeight = getTapeHeight() + 30;
       float bubbleCenterY = pos.y - 140;
       rect( pos.x, bubbleCenterY, bubbleWidth, bubbleHeight );
@@ -165,7 +165,7 @@ class Dude implements LoopListener
         {
           JamImage img = mWantToHear[i].getImage();
           float offsetX = i * (getTapeWidth()+5);
-          img.draw( startX + offsetX, bubbleCenterY );
+          img.draw( startX + offsetX, bubbleCenterY, 1.f );
         }
       }
       else

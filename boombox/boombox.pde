@@ -60,30 +60,28 @@ void setup()
   jamSyncer = new JamSyncer( 121.f );
   globalGain = new Gain(0.f);
   
-  backing = new FilePlayer( minim.loadFileStream( "backing_loop.aif", 512, false ) );
-  jamSyncer.playJam( backing );
-  
-  jamSyncer.patch( globalGain ).patch( mainOut );
-  
   envFollowSink = new Summer();
   sinkSilencer = new Multiplier(0);
   envFollowSink.patch( sinkSilencer ).patch( mainOut );
   
   allJams = new ArrayList<Jam>();
  
-  allJams.add( new Jam("backing_loop.aif", color(0,0,0), -100, -100 ) );
-  allJams.add( new Jam("LP01_drums.aif", color(255,128,0), 580, 120) );
-  allJams.add( new Jam("LP01_bass.aif", color(0,255,200), 600, 400) );
-  allJams.add( new Jam("LP01_blip.aif", color(128,255,0), 200, 600) );
-  allJams.add( new Jam("LP01_pad.aif", color(64,0,128), 100, 450) );
-  allJams.add( new Jam("LP01_drums.aif", color(128,64,0), 580, 120) );
-  allJams.add( new Jam("LP01_bass.aif", color(0,200,64), 600, 400) );
-  allJams.add( new Jam("LP01_blip.aif", color(64,160,0), 200, 600) );
-  allJams.add( new Jam("LP01_pad.aif", color(128,0,64), 100, 450) );
-  allJams.add( new Jam("LP01_drums.aif", color(128,128,0), 580, 120) );
-  allJams.add( new Jam("LP01_bass.aif", color(0,128,64), 600, 400) );
-  allJams.add( new Jam("LP01_blip.aif", color(64,128,0), 200, 600) );
-  allJams.add( new Jam("LP01_pad.aif", color(255,23,128), 100, 450) );
+  allJams.add( new Jam("backing_loop.wav", JamCategory.OTHER, color(0,0,0), -100, -100 ) );
+  allJams.add( new Jam("drums_LP01.wav", JamCategory.DRUMS, #FF0000, 580, 120) );
+  allJams.add( new Jam("bass_LP01.wav", JamCategory.BASS, #FFA500, 600, 400) );
+  allJams.add( new Jam("blip_LP01.wav", JamCategory.BLIP, #FFFF00, 200, 600) );
+  allJams.add( new Jam("pad_LP01.wav", JamCategory.PAD, #008000, 100, 450) );
+  allJams.add( new Jam("drums_LP02.wav", JamCategory.DRUMS, #0000FF, 580, 120) );
+  allJams.add( new Jam("bass_LP02.wav", JamCategory.BASS, #4B0082, 600, 400) );
+  allJams.add( new Jam("blip_LP02.wav", JamCategory.BLIP, #EE82EE, 200, 600) );
+  allJams.add( new Jam("pad_LP02.wav", JamCategory.PAD, #EEEEEE, 100, 450) );
+  allJams.add( new Jam("drums_LP03.wav", JamCategory.DRUMS, #990000, 580, 120) );
+  allJams.add( new Jam("bass_LP03.wav", JamCategory.BASS, #5F70FF, 600, 400) );
+  allJams.add( new Jam("blip_LP03.wav", JamCategory.BLIP, #222222, 200, 600) );
+  allJams.add( new Jam("pad_LP03.wav", JamCategory.PAD, #00FF00, 100, 450) );
+  
+  jamSyncer.playJam( allJams.get(0) );
+  jamSyncer.patch( globalGain ).patch( mainOut );
   
   worldJams = new ArrayList<Jam>();
   

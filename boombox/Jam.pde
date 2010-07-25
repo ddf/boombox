@@ -3,7 +3,7 @@
 // shared image for all jams
 PImage TAPE = null;
 
-  
+
 float getTapeWidth()
 {
   return TAPE.width * 0.15f;
@@ -17,7 +17,7 @@ float getTapeHeight()
 class JamImage
 {
   private color mTint;
-  
+
   JamImage( color c )
   {
     mTint = c;
@@ -26,81 +26,106 @@ class JamImage
       TAPE = loadImage("pixeltape.gif");
     }
   }
-  
+
   color getColor()
   {
     return mTint;
   }
-  
-  void draw( float x, float y )
+
+  void draw( float x, float y, float s )
   {
     imageMode( CENTER );
     tint( mTint );
-    image( TAPE, x, y, getTapeWidth(), getTapeHeight() );
+    image( TAPE, x, y, getTapeWidth() * s, getTapeHeight() * s );
   }
 }
 
+
+
 // a Jam is a cassette tape that the player can collect and then choose to play
-class Jam
+class Jam implements Comparable<Jam>
 {
   private PVector mPos;
-  private float   mWidth, mHeight;
+  private float   mWidth, mHeight, mScale;
   private JamImage mImage;
   private String  mName;
   private FilePlayer mAudio;
-  
-  Jam( String jamName, color c, float x, float y )
+  private JamCategory mCategory;
+
+  Jam( String jamName, JamCategory category, color c, float x, float y )
   {
     mPos = new PVector( x, y );
     mWidth = 32.f;
     mHeight = 24.f;
+    mScale = 1.f;
     mImage = new JamImage(c);
     mName = jamName;
+    mCategory = category;
     mAudio = new FilePlayer( minim.loadFileStream(jamName, 512, false) );
     mAudio.pause();
   }
   
+  public int compareTo( Jam j )
+  {
+    return this.mCategory.compareTo( j.mCategory );
+  }
+  
+  JamCategory getCategory()
+  {
+    return mCategory;
+  }
+
   JamImage getImage()
   {
     return mImage;
   }
-  
+
   color getColor()
   {
     return mImage.getColor();
   }
-  
+
   FilePlayer getAudio()
   {
     return mAudio;
   }
-  
+
   void setPos( float x, float y )
   {
     mPos.set( x, y, 0 );
   }
-  
+
   PVector getPos()
   {
     return mPos;
   }
   
+  void setScale( float s )
+  {
+    mScale = s;
+  }
+
   float getWidth()
   {
-    return mWidth;
+    return mWidth * mScale;
   }
   
+  float getHeight()
+  {
+    return mHeight * mScale;
+  }
+
   boolean pointInside( float x, float y )
   {
-    float hw = mWidth * 0.5f;
-    float hh = mHeight * 0.5f;
+    float hw = getWidth() * 0.5f;
+    float hh = getHeight() * 0.5f;
     return ( x > mPos.x - hw && x < mPos.x + hw && y > mPos.y - hh && y < mPos.y + hh );
   }
-  
+
   void draw()
   {
-    mImage.draw( mPos.x, mPos.y );
-    
+    mImage.draw( mPos.x, mPos.y, mScale );
+
     strokeWeight(2);
     stroke(255,255,255);
     if ( willPlay() )
@@ -122,29 +147,30 @@ class Jam
     }
     else if ( isPlaying() )
     {
-      fill(255,255,255);
-      triangle( mPos.x - 5, mPos.y - 5, mPos.x - 5, mPos.y + 5, mPos.x + 5, mPos.y );
+      fill(0);
+      rectMode( CENTER );
+      rect( mPos.x, mPos.y, 10, 10 );
     }
   }
-  
+
   boolean willPlay()
   {
-    return jamSyncer.willJamPlay( mAudio );
+    return jamSyncer.willJamPlay( this );
   }
-  
+
   boolean willEject()
   {
-    return jamSyncer.willJamEject( mAudio );
+    return jamSyncer.willJamEject( this );
   } 
-  
+
   boolean isPlaying()
   {
-    return jamSyncer.isJamPlaying( mAudio );
+    return jamSyncer.isJamPlaying( this );
   }
-  
+
   void queue()
   {
-    jamSyncer.queueJam( mAudio );
+    jamSyncer.queueJam( this );
   }
 }
 

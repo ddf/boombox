@@ -8,11 +8,11 @@ interface LoopListener
 class JamSyncer extends UGen
 {
   // a list of AudioRecordingStreams that we are currently pulling from
-  private ArrayList mActive;
+  private ArrayList<Jam> mActive;
   // a list of AudioRecordingStream we should remove at the end of a loop
-  private ArrayList mToRemove;
+  private ArrayList<Jam> mToRemove;
   // a list of AudioRecordingStreams we should add at the end of a loop
-  private ArrayList mToAdd;
+  private ArrayList<Jam> mToAdd;
   // a dummy summer to bump the output count of active jams
   // eventually I should switch to using this instead of mActive
   private Summer mSink;
@@ -31,9 +31,9 @@ class JamSyncer extends UGen
   
   JamSyncer( float bpm )
   {
-    mActive = new ArrayList();
-    mToRemove = new ArrayList();
-    mToAdd = new ArrayList();
+    mActive = new ArrayList<Jam>();
+    mToRemove = new ArrayList<Jam>();
+    mToAdd = new ArrayList<Jam>();
     mLoopListeners = new ArrayList();
     mSink = new Summer();
     
@@ -53,17 +53,17 @@ class JamSyncer extends UGen
     mLoopListeners.remove( ll );
   }
   
-  boolean willJamPlay( FilePlayer jam )
+  boolean willJamPlay( Jam jam )
   {
     return mToAdd.contains( jam );
   }
   
-  boolean willJamEject( FilePlayer jam )
+  boolean willJamEject( Jam jam )
   {
     return mToRemove.contains( jam );
   }
   
-  boolean isJamPlaying( FilePlayer jam )
+  boolean isJamPlaying( Jam jam )
   {
     return mActive.contains(jam);
   }
@@ -83,7 +83,7 @@ class JamSyncer extends UGen
     return mMeasureCount;
   }
   
-  void queueJam( FilePlayer jam )
+  void queueJam( Jam jam )
   {
     boolean bActive = mActive.contains(jam);
     if ( bActive == false && mToAdd.contains(jam) == false )
@@ -97,9 +97,10 @@ class JamSyncer extends UGen
     }
   }
   
-  void playJam( FilePlayer jam )
+  void playJam( Jam jam )
   {
     mActive.add( jam );
+    jam.getAudio().play(0);
   }
   
   private void calcSamplesInMeasure()
@@ -122,6 +123,14 @@ class JamSyncer extends UGen
     calcSamplesInMeasure();
   }
   
+  private void removeJam( Jam j )
+  {
+      FilePlayer fp = j.getAudio();
+      fp.pause();
+      fp.unpatch( mSink );
+      mActive.remove( j );
+  }
+  
   protected void uGenerate( float[] channels )
   {
     mSampleCount++;
@@ -135,7 +144,8 @@ class JamSyncer extends UGen
     
     for(int i = 0; i < mActive.size(); ++i)
     {
-      FilePlayer fp = (FilePlayer)mActive.get(i);
+      Jam j = mActive.get(i);
+      FilePlayer fp = j.getAudio();
       fp.tick( samps );
       for(int s = 0; s < samps.length; ++s)
       {
@@ -148,10 +158,8 @@ class JamSyncer extends UGen
       // remove elements from our active list that are in our toBeRemoved list
       for( int i = 0; i < mToRemove.size(); ++i )
       {
-        FilePlayer fp = (FilePlayer)mToRemove.get(i);
-        fp.pause();
-        fp.unpatch( mSink );
-        mActive.remove( fp );
+        Jam j = mToRemove.get(i);
+        removeJam( j );
       }
       mToRemove.clear();
       
@@ -162,15 +170,34 @@ class JamSyncer extends UGen
       {
         for(int i = 0; i < mToAdd.size(); ++i)
         {
-          FilePlayer fp = (FilePlayer)mToAdd.get(i);
+          Jam j = mToAdd.get(i);
+          
+          // see if there is currently a jam of the same catergory playing
+          // and remove it if the category is an exclusive one.
+          if ( j.getCategory().isExclusive() )
+          {
+            Iterator<Jam> iter = mActive.iterator();
+            while( iter.hasNext() )
+            {
+              Jam comp = iter.next();
+              if ( comp.getCategory() == j.getCategory() )
+              {
+                removeJam( comp );
+                break;
+              }
+            }
+          }
+          
+          FilePlayer fp = j.getAudio();
           fp.patch( mSink );
-          mActive.add( fp );
+          mActive.add( j );
         }
         mToAdd.clear();
         
         for( int i = 0; i < mActive.size(); ++i )
         {
-          FilePlayer fp = (FilePlayer)mActive.get(i);
+          Jam j = mActive.get(i);
+          FilePlayer fp = j.getAudio();
           fp.play(0);
         }
         

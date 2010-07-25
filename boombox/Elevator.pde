@@ -8,7 +8,7 @@ class Elevator
   
   Elevator( float x, float y, float maxVertDisp, Jam jamToFollow )
   {
-    mRect = new Rectangle( x, y, 100, 6, CENTER, TOP );
+    mRect = new Rectangle( x, y, 100, 10, CENTER, TOP );
     mX = x;
     mMaxY = y;
     mMinY = mMaxY - maxVertDisp;

@@ -4,7 +4,7 @@
 class Inventory
 {
   // all my jams
-  private ArrayList mJams;
+  private ArrayList<Jam> mJams;
   // the jam the mouse is currently over
   private Jam       mCurrentJam;
   
@@ -22,13 +22,15 @@ class Inventory
   // how much time has gone by in our lerp
   private float     mCurrTime;
   
+  private float     mTapeScale = 0.75f;
+  
   
   // is the mouse inside of us?
   private boolean   mMouseInside;
   
   Inventory()
   {
-    mJams = new ArrayList();
+    mJams = new ArrayList<Jam>();
     mCurrentJam = null;
     mCurrTime = mLerpTime;
     open();
@@ -52,10 +54,11 @@ class Inventory
     
     mCurrentJam = null;
     if ( mMouseInside )
-    {
-      for(int i = 0; i < mJams.size(); ++i)
+    { 
+      Iterator<Jam> iter = mJams.iterator();
+      while ( iter.hasNext() )
       {
-        Jam j = (Jam)mJams.get(i);
+        Jam j = iter.next();
         if ( j.pointInside( mouseX, mouseY - mBottom ) )
         {
           mCurrentJam = j;
@@ -122,6 +125,35 @@ class Inventory
     mCurrTime = mLerpTime - mCurrTime;
   }
   
+  void drawGroup( ArrayList<Jam> group )
+  {
+    int groupSize = group.size();
+    // println("Drawing a group of " + groupSize + " jams.");
+    if ( groupSize > 0 )
+    {
+      fill( 80 );
+      noStroke();
+      rectMode( CORNERS );
+      
+      Jam first = group.get(0);
+      Jam last = group.get( groupSize - 1 );
+      float minX = first.getPos().x - first.getWidth() * 0.5f - 10;
+      float minY = first.getPos().y - first.getHeight() * 0.5f - 6;
+      float maxX = last.getPos().x + last.getWidth() * 0.5f + 10;
+      float maxY = last.getPos().y + last.getHeight() * 0.5f + 6;
+     
+      rect( minX, minY, maxX, maxY );
+      
+      for(int i = 0; i < groupSize; i++)
+      {
+        group.get(i).draw();
+      }
+      
+      group.clear();
+    }
+    
+  }
+  
   void draw()
   {
     pushMatrix();
@@ -135,12 +167,30 @@ class Inventory
       rectMode( CORNERS );
       rect( 0, -mHeight, width, 0 );
       
-      // jams
-      for(int i = 0; i < mJams.size(); ++i)
+      int offset = 30;    
+      // jams, guard against concurrent modification
+      Jam[] jams = mJams.toArray( new Jam[] {} );
+      ArrayList<Jam> group = new ArrayList<Jam>();
+      Jam prev = null;
+      for( int i = 0; i < jams.length; i++)
       {
-        Jam j = (Jam)mJams.get(i);
-        j.draw();
+        Jam j = jams[i];
+        
+        // draw a box?
+        if ( prev != null && prev.getCategory() != j.getCategory() )
+        {
+          drawGroup( group );
+          offset += 16;
+        }
+        
+        j.setPos( offset, -mHeight / 2 );
+        group.add( j );
+        
+        offset += (int)j.getWidth() * 2 - 4.f;
+        prev = j;
       }
+      
+      drawGroup( group );
       
       // dividing line
       stroke( 255, 255, 255 );
@@ -152,8 +202,8 @@ class Inventory
   
   void addJam( Jam j )
   {
-    int offset = 40 + mJams.size() * (int)j.getWidth() * 2;
-    j.setPos( offset, -mHeight / 2 );
+    j.setScale( mTapeScale );
     mJams.add( j );
+    Collections.sort( mJams );
   }
 }
