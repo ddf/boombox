@@ -4,6 +4,7 @@ public enum JamCategory
   BASS (true),
   BLIP (false),
   PAD (false),
+  CHORD (true),
   OTHER (false);
   
   private boolean m_bExclusive;

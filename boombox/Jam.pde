@@ -61,7 +61,7 @@ class Jam implements Comparable<Jam>
     mImage = new JamImage(c);
     mName = jamName;
     mCategory = category;
-    mAudio = new FilePlayer( minim.loadFileStream(jamName, 512, false) );
+    mAudio = new FilePlayer( minim.loadFileStream(jamName, 512, true) );
     mAudio.pause();
   }
   

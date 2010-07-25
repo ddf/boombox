@@ -2,8 +2,9 @@
   * Use WASD to move around. <br/>
   * Pick up Jams (the cassettes) by walking over them.<br/>
   * Click on a Jam in your inventory at the top of the screen to play it or eject it.<br/>
-  * Stand next to the green dude and click on him to Jam together. <br/>
-  * Mix and match your Jams to make a Fresh Tune.
+  * Stand next to a green dude and click on him to Jam together. <br/>
+  * Mix and match your Jams to make a Fresh Tune.<br/>
+  * Hold down R to glitch out your Tune like a pro!
   */
 
 import ddf.minim.*;
@@ -20,15 +21,12 @@ Minim minim;
 
 // our main audio path
 JamSyncer jamSyncer;
+SampleAndRepeat sampleRepeat;
 Gain  globalGain;
 AudioOutput mainOut;
 
-// this plays all the time
-FilePlayer backing;
-
 // something to plug envelope followers into
-Summer envFollowSink;
-Multiplier sinkSilencer;
+Sink envFollowSink;
 
 // visual junks
 Avatar player;
@@ -56,13 +54,13 @@ void setup()
   size(640, 480, P3D);
   
   minim = new Minim(this);
-  mainOut = minim.getLineOut();
+  mainOut = minim.getLineOut( Minim.STEREO, 512 );
   jamSyncer = new JamSyncer( 121.f );
+  sampleRepeat = new SampleAndRepeat( 121.f, 0.5f );
   globalGain = new Gain(0.f);
   
-  envFollowSink = new Summer();
-  sinkSilencer = new Multiplier(0);
-  envFollowSink.patch( sinkSilencer ).patch( mainOut );
+  envFollowSink = new Sink();
+  envFollowSink.patch( mainOut );
   
   allJams = new ArrayList<Jam>();
  
@@ -70,18 +68,18 @@ void setup()
   allJams.add( new Jam("drums_LP01.wav", JamCategory.DRUMS, #FF0000, 580, 120) );
   allJams.add( new Jam("bass_LP01.wav", JamCategory.BASS, #FFA500, 600, 400) );
   allJams.add( new Jam("blip_LP01.wav", JamCategory.BLIP, #FFFF00, 200, 600) );
-  allJams.add( new Jam("pad_LP01.wav", JamCategory.PAD, #008000, 100, 450) );
+  allJams.add( new Jam("pad_LP04.wav", JamCategory.PAD, #008000, 100, 450) );
   allJams.add( new Jam("drums_LP02.wav", JamCategory.DRUMS, #0000FF, 580, 120) );
-  allJams.add( new Jam("bass_LP02.wav", JamCategory.BASS, #4B0082, 600, 400) );
+  allJams.add( new Jam("chords_LP02.wav", JamCategory.CHORD, #4B0082, 600, 400) );
   allJams.add( new Jam("blip_LP02.wav", JamCategory.BLIP, #EE82EE, 200, 600) );
   allJams.add( new Jam("pad_LP02.wav", JamCategory.PAD, #EEEEEE, 100, 450) );
   allJams.add( new Jam("drums_LP03.wav", JamCategory.DRUMS, #990000, 580, 120) );
   allJams.add( new Jam("bass_LP03.wav", JamCategory.BASS, #5F70FF, 600, 400) );
   allJams.add( new Jam("blip_LP03.wav", JamCategory.BLIP, #222222, 200, 600) );
-  allJams.add( new Jam("pad_LP03.wav", JamCategory.PAD, #00FF00, 100, 450) );
+  allJams.add( new Jam("blip_LP05.wav", JamCategory.BLIP, #00FF00, 100, 450) );
   
   jamSyncer.playJam( allJams.get(0) );
-  jamSyncer.patch( globalGain ).patch( mainOut );
+  jamSyncer.patch( sampleRepeat ).patch( globalGain ).patch( mainOut );
   
   worldJams = new ArrayList<Jam>();
   
@@ -196,21 +194,25 @@ void keyPressed()
 {
   if ( key != CODED )
   {
-    if ( key == 'd' )
+    if ( key == 'd' || key == 'D' )
     {
       player.setXDir( 1 );
     }
-    else if ( key == 'a' )
+    else if ( key == 'a' || key == 'A' )
     {
       player.setXDir( -1 );
     }
-    else if ( key == 'w' )
+    else if ( key == 'w' || key == 'W' )
     {
       player.setYDir( -1 );
     }
-    else if ( key == 's' )
+    else if ( key == 's' || key == 'S' )
     {
       player.setYDir( 1 );
+    }
+    else if ( (key == 'r' || key == 'R')  && sampleRepeat.isActive() == false )
+    {
+      sampleRepeat.activate(); 
     }
   }
 }
@@ -219,21 +221,25 @@ void keyReleased()
 {
   if ( key != CODED )
   {
-    if ( key == 'd' )
+    if ( key == 'd' || key == 'D' )
     {
       player.setXDir( 0 );
     }
-    else if ( key == 'a' )
+    else if ( key == 'a' || key == 'A' )
     {
       player.setXDir( 0 );
     }
-    else if ( key == 'w' )
+    else if ( key == 'w' || key == 'W' )
     {
       player.setYDir( 0 );
     }
-    else if ( key == 's' )
+    else if ( key == 's' || key == 'S' )
     {
       player.setYDir( 0 );
+    }
+    else if ( key == 'r' || key == 'R' )
+    {
+      sampleRepeat.deactivate();
     }
   }
 }
