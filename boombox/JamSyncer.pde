@@ -90,17 +90,13 @@ class JamSyncer extends UGen
     {
       // println("Adding a jam that is about " + jam.getMetaData().sampleFrameCount() + " samples long. We calc'd one loop at " + mSamplesInMeasure);
       mToAdd.add( jam );
+      tapePlay.trigger();
     }
     else if ( bActive == true && mToRemove.contains(jam) == false )
     {
       mToRemove.add( jam );
+      tapeStop.trigger();
     }
-  }
-  
-  void playJam( Jam jam )
-  {
-    mActive.add( jam );
-    jam.getAudio().play(0);
   }
   
   private void calcSamplesInMeasure()
@@ -123,11 +119,18 @@ class JamSyncer extends UGen
     calcSamplesInMeasure();
   }
   
+  void playJam( Jam jam )
+  {
+    mActive.add( jam );
+    jam.setSampleNum( 0 );
+    jam.setPaused( false );
+    jam.patch( mSink );
+  }
+  
   private void removeJam( Jam j )
   {
-      FilePlayer fp = j.getAudio();
-      fp.pause();
-      fp.unpatch( mSink );
+      j.unpatch( mSink );
+      j.setPaused( true );
       mActive.remove( j );
   }
   
@@ -145,8 +148,7 @@ class JamSyncer extends UGen
     for(int i = 0; i < mActive.size(); ++i)
     {
       Jam j = mActive.get(i);
-      FilePlayer fp = j.getAudio();
-      fp.tick( samps );
+      j.tick( samps );
       for(int s = 0; s < samps.length; ++s)
       {
         channels[s] += samps[s];
@@ -188,17 +190,14 @@ class JamSyncer extends UGen
             }
           }
           
-          FilePlayer fp = j.getAudio();
-          fp.patch( mSink );
-          mActive.add( j );
+          playJam( j );
         }
         mToAdd.clear();
         
         for( int i = 0; i < mActive.size(); ++i )
         {
           Jam j = mActive.get(i);
-          FilePlayer fp = j.getAudio();
-          fp.play(0);
+          j.setSampleNum( 0 );
         }
         
         for(int i = 0; i < mLoopListeners.size(); ++i)

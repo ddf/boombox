@@ -43,13 +43,18 @@ class JamImage
 
 
 // a Jam is a cassette tape that the player can collect and then choose to play
-class Jam implements Comparable<Jam>
+class Jam extends UGen 
+          implements Comparable<Jam>
 {
   private PVector mPos;
   private float   mWidth, mHeight, mScale;
   private JamImage mImage;
   private String  mName;
-  private FilePlayer mAudio;
+  private float[] mLeftChannel;
+  private float[] mRightChannel;
+  private int     mSampleNum;
+  private boolean mPaused;
+  
   private JamCategory mCategory;
 
   Jam( String jamName, JamCategory category, color c, float x, float y )
@@ -61,8 +66,13 @@ class Jam implements Comparable<Jam>
     mImage = new JamImage(c);
     mName = jamName;
     mCategory = category;
-    mAudio = new FilePlayer( minim.loadFileStream(jamName, 512, true) );
-    mAudio.pause();
+    
+    // extract uncompressed audio
+    AudioSample sample = minim.loadSample( jamName );
+    mLeftChannel = sample.getChannel( BufferedAudio.LEFT );
+    mRightChannel = sample.getChannel( BufferedAudio.RIGHT );
+    mSampleNum = 0;
+    mPaused = true;
   }
   
   public int compareTo( Jam j )
@@ -84,10 +94,34 @@ class Jam implements Comparable<Jam>
   {
     return mImage.getColor();
   }
-
-  FilePlayer getAudio()
+  
+  void setSampleNum( int n )
   {
-    return mAudio;
+    mSampleNum = n;
+  }
+  
+  void setPaused( boolean paused )
+  {
+    mPaused = paused;
+  }
+  
+  void uGenerate( float[] out )
+  {
+    if ( mPaused == false )
+    {
+      out[0] = mLeftChannel[mSampleNum];
+      out[1] = mRightChannel[mSampleNum];
+      mSampleNum++;
+      if ( mSampleNum == mLeftChannel.length )
+      {
+        mSampleNum = 0;
+      }
+    }
+    else
+    {
+      out[0] = 0;
+      out[1] = 0;
+    }
   }
 
   void setPos( float x, float y )

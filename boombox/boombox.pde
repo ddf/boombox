@@ -28,6 +28,11 @@ AudioOutput mainOut;
 // something to plug envelope followers into
 Sink envFollowSink;
 
+// SFX
+AudioSample tapeGet;
+AudioSample tapePlay;
+AudioSample tapeStop;
+
 // visual junks
 Avatar player;
 Mouse  mouse;
@@ -61,6 +66,13 @@ void setup()
   
   envFollowSink = new Sink();
   envFollowSink.patch( mainOut );
+  
+  tapeGet  = minim.loadSample( "tape_on.wav" );
+  tapeGet.setGain( 2.f );
+  tapePlay = minim.loadSample( "tape_in.wav" );
+  tapePlay.setGain( 2.f );
+  tapeStop = minim.loadSample( "tape_stop.wav" );
+  tapeStop.setGain( 2.f );
   
   allJams = new ArrayList<Jam>();
  

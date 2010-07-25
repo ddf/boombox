@@ -202,6 +202,7 @@ class Inventory
   
   void addJam( Jam j )
   {
+    tapeGet.trigger();
     j.setScale( mTapeScale );
     mJams.add( j );
     Collections.sort( mJams );

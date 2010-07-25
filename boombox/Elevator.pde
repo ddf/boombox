@@ -14,7 +14,7 @@ class Elevator
     mMinY = mMaxY - maxVertDisp;
     mColor = jamToFollow.getColor();
     mFollower = new EnvelopeFollower( 0.05f, 2.0f, 512 ); // attack, release, buffersize
-    jamToFollow.getAudio().patch( mFollower ).patch( envFollowSink );
+    jamToFollow.patch( mFollower ).patch( envFollowSink );
   }
   
   Rectangle getRect()
