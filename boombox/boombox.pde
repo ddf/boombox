@@ -4,7 +4,10 @@
  * Click on a Jam in your inventory at the top of the screen to play it or eject it.<br/>
  * Stand next to a green dude and click on him to Jam together. <br/>
  * Mix and match your Jams to make a Fresh Tune.<br/>
- * Hold down R to glitch out your Tune like a pro!
+ * Hold down R to glitch out your Tune like a pro!<br/>
+ * Hold down G to apply a stutter effect!<br/>
+ * Hold down F to apply a filter effect!<br/>
+ * Mix and match your effects!
  */
 
 import ddf.minim.*;
