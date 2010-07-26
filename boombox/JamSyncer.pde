@@ -200,6 +200,9 @@ class JamSyncer extends UGen
           j.setSampleNum( 0 );
         }
         
+        // reset the granulate effect to keep it in sync as best as possiblefff
+        granulate.reset();
+        
         for(int i = 0; i < mLoopListeners.size(); ++i)
         {
           LoopListener ll = (LoopListener)mLoopListeners.get(i);
