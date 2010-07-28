@@ -17,6 +17,8 @@ class Dude implements LoopListener
   boolean         mMousedOver;
   // is the player close enough to click on me?
   boolean         mCanClick;
+  // did I give my jam away
+  boolean         mGaveJam;
   
   // abusing a wavefor for down and dirty animation
   Wavetable mAnimCurve;
@@ -25,6 +27,10 @@ class Dude implements LoopListener
   // which animation to do 
   int       mAnimation;
   
+  private PVector mPos;
+  
+  private AnimationSet mAnims;
+  
   // different animations
   static final int IDLE = 0;
   static final int SHAKE = 1;
@@ -32,17 +38,22 @@ class Dude implements LoopListener
   
   Dude( float x, float y, Jam[] wantToHear, Jam toPlay )
   {
+    mPos = new PVector(x, y);
     mRect = new Rectangle( x, y, 64, 64, CENTER, BOTTOM );
     mJamArea = new Rectangle( x, y, 256, 64, CENTER, CENTER );
     mWantToHear = wantToHear;
     mMyJam = toPlay;
     
     mJammed = false;
+    mGaveJam = false;
     mLoops = 0;
     
     mAnimCurve = Waves.TRIANGLE;
     mAnimCurveStep = 1.f;
     mAnimation = IDLE;
+    
+    mAnims = new AnimationSet( animationSystem, new String[] { "idle", "nojam", "yesjam", "play", "jamming" } );
+    mAnims.setAnimation( "idle" );
   }
   
   PVector getPos()
@@ -68,15 +79,26 @@ class Dude implements LoopListener
       }
     }
     
-    if ( mAnimCurveStep < 1.f )
+    if ( mMyJam.isPlaying() )
     {
-      mAnimCurveStep += 6.f * dt;
-      if ( mAnimCurveStep > 1.f )
+      mAnims.setAnimation( "jamming" );
+      if ( mGaveJam == false )
       {
-        mAnimCurveStep = 1.f;
-        mAnimation = IDLE;
+        player.jam();
       }
     }
+    else if ( mGaveJam == false && mJammed && mAnims.currentAnimationName().equals( "jamming" ) )
+    {
+      mMyJam.queue();
+      jamSyncer.addLoopListener( this );
+      mAnims.setAnimation( "play", "idle" );
+    }
+    else if ( mAnims.currentAnimationName().equals( "jamming" ) )
+    {
+      mAnims.setAnimation( "idle" );
+    }
+    
+    mAnims.update( dt );
   }
   
   void mousePressed()
@@ -90,18 +112,14 @@ class Dude implements LoopListener
         {
           println("Something I want to hear isn't playing!");
           // trigger the head shake anim
-          mAnimCurveStep = 0.f;
-          mAnimation = SHAKE;
+          mAnims.setAnimation("nojam");
           return;   
         }
       }
       
       // yes all good
       mJammed = true;
-      mAnimCurveStep = 0.f;
-      mAnimation = JUMP;
-      mMyJam.queue();
-      jamSyncer.addLoopListener( this );
+      mAnims.setAnimation("yesjam", "jamming");
     }
   }
   
@@ -111,36 +129,28 @@ class Dude implements LoopListener
     if ( mLoops == 2 )
     {
       inventory.addJam( mMyJam );
-      mMyJam = null;
+      mGaveJam = true;
+      player.collect();
       jamSyncer.removeLoopListener( this );
     }
   }
   
   void draw()
-  {
-    
-    noStroke();
-    fill(0, 255, 0);
-    
+  { 
     pushMatrix();
     {
-      if ( mAnimation == SHAKE )
-      {
-        translate( mAnimCurve.value( mAnimCurveStep ) * 5.f, 0 );
-      }
-      else 
-      if ( mAnimation == JUMP )
-      {
-        translate( 0, abs( mAnimCurve.value( mAnimCurveStep ) ) * -10.f );
-      }
-      mRect.draw();
+      tint(0, 255, 255);
+      imageMode(CENTER);
+      translate( mPos.x, mPos.y - mAnims.currentAnimation().height() / 2.f );
+      scale( -1, 1 );
+      mAnims.draw();
     }
     popMatrix();
     
 //    fill(0, 64);
 //    mJamArea.draw();
     
-    if ( mMyJam != null )
+    if ( mGaveJam == false )
     {
       PVector pos = mRect.getPos();
       

@@ -16,6 +16,8 @@ import ddf.minim.effects.*;
 import ddf.minim.ugens.*;
 import ddf.minim.spi.*;
 
+import net.compartmental.contraptions.*;
+
 boolean DRAW_COLLISION = false;
 color   COLLISION_COLOR = color(0, 255, 0, 128);
 
@@ -51,6 +53,8 @@ Mouse  mouse;
 Inventory inventory;
 Stage     theStage;
 
+AnimationSystem animationSystem;
+
 // all the Jams in the game
 // Jam 0 is the backing jam
 // Jam 1 is the first cassette you pick up
@@ -69,6 +73,9 @@ float cameraOffset = 0;
 void setup()
 {
   size(640, 480, P3D);
+  
+  animationSystem = new AnimationSystem(this);
+  animationSystem.loadAnimations( "animation/animations.xml" );
 
   float tempo = 121.f;
   float beatPerSec = 60.f / tempo;
@@ -197,6 +204,7 @@ void draw()
     {
       iter.remove();
       inventory.addJam( j );
+      player.collect();
     }
     else
     {

@@ -72,9 +72,13 @@ class Inventory
         {
           mouse.setState( Mouse.EJECT );
         }
-        else
+        else if ( mCurrentJam.willPlay() == false )
         {
           mouse.setState( Mouse.PLAY );
+        }
+        else
+        {
+          mouse.setState( Mouse.EMPTY );
         }
       }
       else
@@ -107,6 +111,15 @@ class Inventory
   {
     if ( mCurrentJam != null )
     {
+      if ( mCurrentJam.isPlaying() )
+      {
+        player.eject();
+      }
+      else if ( mCurrentJam.willPlay() == false )
+      {
+        player.play();
+      }
+      
       mCurrentJam.queue();
     }
   }
