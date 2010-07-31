@@ -13,7 +13,7 @@ class Elevator
     mMaxY = y;
     mMinY = mMaxY - maxVertDisp;
     mColor = jamToFollow.getColor();
-    mFollower = new EnvelopeFollower( 0.05f, 2.0f, 512 ); // attack, release, buffersize
+    mFollower = new EnvelopeFollower( 0.05f, 12.0f, 512 ); // attack, release, buffersize
     jamToFollow.patch( mFollower ).patch( envFollowSink );
   }
   

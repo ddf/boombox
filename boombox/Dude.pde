@@ -1,5 +1,5 @@
 // a Dude is someone who you can Jam with
-class Dude implements LoopListener
+class Dude implements LoopListener, AnimationStateMachine.EventListener
 {
   // our visible rectangle
   private Rectangle mRect;
@@ -20,16 +20,9 @@ class Dude implements LoopListener
   // did I give my jam away
   boolean         mGaveJam;
   
-  // abusing a wavefor for down and dirty animation
-  Wavetable mAnimCurve;
-  // where in the wave for we look for our position offset
-  float     mAnimCurveStep;
-  // which animation to do 
-  int       mAnimation;
-  
   private PVector mPos;
   
-  private AnimationSet mAnims;
+  private AnimationStateMachine mAnims;
   
   // different animations
   static final int IDLE = 0;
@@ -48,12 +41,8 @@ class Dude implements LoopListener
     mGaveJam = false;
     mLoops = 0;
     
-    mAnimCurve = Waves.TRIANGLE;
-    mAnimCurveStep = 1.f;
-    mAnimation = IDLE;
-    
-    mAnims = new AnimationSet( animationSystem, new String[] { "idle", "nojam", "yesjam", "play", "jamming" } );
-    mAnims.setAnimation( "idle" );
+    mAnims = new AnimationStateMachine( animationSystem, new XMLElement(boombox.this, "animation/dude.xml") );
+    mAnims.addEventListener( this );
   }
   
   PVector getPos()
@@ -67,7 +56,7 @@ class Dude implements LoopListener
     {
       mMousedOver = false;
       mouse.setState( Mouse.EMPTY );
-      if ( mJammed == false && mAnimCurveStep == 1.f )
+      if ( mJammed == false )
       {
         mCanClick = mJamArea.pointInside( player.getPos() );
         
@@ -81,21 +70,15 @@ class Dude implements LoopListener
     
     if ( mMyJam.isPlaying() )
     {
-      mAnims.setAnimation( "jamming" );
+      mAnims.sendEvent( "jam" );
       if ( mGaveJam == false )
       {
         player.jam();
       }
     }
-    else if ( mGaveJam == false && mJammed && mAnims.currentAnimationName().equals( "jamming" ) )
+    else if ( mMyJam.willPlay() == false && mMyJam.willEject() == false )
     {
-      mMyJam.queue();
-      jamSyncer.addLoopListener( this );
-      mAnims.setAnimation( "play", "idle" );
-    }
-    else if ( mAnims.currentAnimationName().equals( "jamming" ) )
-    {
-      mAnims.setAnimation( "idle" );
+      mAnims.sendEvent( "idle" );
     }
     
     mAnims.update( dt );
@@ -112,14 +95,14 @@ class Dude implements LoopListener
         {
           println("Something I want to hear isn't playing!");
           // trigger the head shake anim
-          mAnims.setAnimation("nojam");
+          mAnims.sendEvent("nojam");
           return;   
         }
       }
       
       // yes all good
       mJammed = true;
-      mAnims.setAnimation("yesjam", "jamming");
+      mAnims.sendEvent("yesjam");
     }
   }
   
@@ -132,6 +115,15 @@ class Dude implements LoopListener
       mGaveJam = true;
       player.collect();
       jamSyncer.removeLoopListener( this );
+    }
+  }
+  
+  void eventSent( AnimationStateMachine.Event event )
+  {
+    if ( event.getName().equals("play") )
+    {
+      mMyJam.queue();
+      jamSyncer.addLoopListener( this ); 
     }
   }
   

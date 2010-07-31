@@ -8,14 +8,13 @@ class Avatar
   private int     mXDir = 0;
   private int     mYDir = 0;   
   private float   mScale = 1.f;
-  private AnimationSet mAnims;
+  private AnimationStateMachine mAnims;
   
   Avatar( float xPos, float yPos )
   {
     mPos = new PVector( xPos, yPos );
     mGoal = new PVector( mPos.x, mPos.y );
-    mAnims = new AnimationSet( animationSystem, new String[] { "idle", "walk", "collect", "play", "eject", "jamming" } );
-    mAnims.setAnimation( "idle" );
+    mAnims = new AnimationStateMachine( animationSystem, new XMLElement( boombox.this, "animation/player.xml" ) );
   }
   
   void setXDir( int dir )
@@ -70,7 +69,7 @@ class Avatar
   
   void update( float dt )
   { 
-    String currentAnim = mAnims.currentAnimationName();
+    String currentAnim = mAnims.getCurrentStateName();
     
     if ( currentAnim.equals( "idle" ) || currentAnim.equals( "walk" ) )
     {
@@ -85,11 +84,11 @@ class Avatar
       
       if ( mPos.x == newPos.x && mPos.y == newPos.y )
       {
-        mAnims.setAnimation( "idle" );
+        mAnims.sendEvent( "idle" );
       }
       else
       {
-        mAnims.setAnimation( "walk" );
+        mAnims.sendEvent( "walk" );
       }
       
       mPos.set( newPos );
@@ -105,7 +104,7 @@ class Avatar
     {
       imageMode( CENTER ); 
       tint(255);
-      translate( mPos.x, mPos.y - mAnims.currentAnimation().height() / 2.f );
+      translate( mPos.x, mPos.y  - mAnims.currentAnimation().height() / 2.f );
       scale( mScale, 1 );
       mAnims.draw();
     }
@@ -114,27 +113,29 @@ class Avatar
   
   void collect()
   {
-    mAnims.setAnimation( "collect", "idle" );
+    // println("collect");
+    mAnims.sendEvent( "collect" );
   }
   
   void play()
   {
-    mAnims.setAnimation( "play", "idle" );
+    mAnims.sendEvent( "play" );
   }
   
   void eject()
   {
-    mAnims.setAnimation( "eject", "idle" );
+    mAnims.sendEvent( "eject" );
   }
   
   void jam()
   {
-    mAnims.setAnimation( "jamming" );
+    // println("Player going to Jam!");
+    mAnims.sendEvent( "jam" );
   }
   
   void idle()
   {
-    mAnims.setAnimation( "idle" );
+    mAnims.sendEvent( "idle" );
   }
   
   

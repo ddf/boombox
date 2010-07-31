@@ -9,6 +9,10 @@
         <frame>idle0003.png</frame>
         <frame>idle0004.png</frame>
 	</animation>
+    
+    <animation name="idle_to_jam" fps="15">
+        <frame>idle_to_jam0000.png</frame>
+    </animation>
 
 	<animation name="walk" fps="15">
         <frame>walk0000.png</frame>
