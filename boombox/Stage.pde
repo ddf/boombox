@@ -25,7 +25,7 @@ class Stage
   Stage()
   {
     theSky = loadImage("bg_01.png");
-    groundTex = loadImage("ground_01.png");
+    groundTex = loadImage("ground_02.png");
     
     mElevators = new ArrayList<Elevator>();
     mPlatforms = new ArrayList<Rectangle>();
@@ -298,14 +298,14 @@ class Stage
         beginShape(QUADS);
         texture( groundTex );
         textureMode( NORMALIZED );
-        tint(255);
+        tint(105, 122, 144);
         // first ground
         for( int x = -10; x < theGround.getBounds().maxX + 30; x += groundTex.width )
         {
-          vertex(x, lowY, 0, 0.08);
+          vertex(x, lowY, 0, 0);
           vertex(x, hiY, 0, 1);
           vertex(x + groundTex.width, hiY, 1, 1);
-          vertex(x + groundTex.width, lowY, 1, 0.08);
+          vertex(x + groundTex.width, lowY, 1, 0);
         }
         
         // second ground

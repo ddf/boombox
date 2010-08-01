@@ -4,7 +4,6 @@ class Avatar
   private PVector mPos; // where I am
   private PVector mGoal; // where I am going
   private float   mSpeed = 175.f;
-  private float   mSize = 64.f;
   private int     mXDir = 0;
   private int     mYDir = 0;   
   private float   mScale = 1.f;
@@ -62,9 +61,9 @@ class Avatar
     return new PVector( mPos.x, mPos.y );
   }
   
-  float getSize()
+  float getHeight()
   {
-    return mSize;
+    return mAnims.currentAnimation().height();
   }
   
   void update( float dt )
@@ -115,6 +114,7 @@ class Avatar
   void collect()
   {
     // println("collect");
+    tapeGet.trigger();
     mAnims.sendEvent( "collect" );
   }
   

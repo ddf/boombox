@@ -6,12 +6,12 @@ PImage TAPE = null;
 
 float getTapeWidth()
 {
-  return TAPE.width * 0.15f;
+  return TAPE.width * 0.1f;
 }
 
 float getTapeHeight()
 {
-  return TAPE.height * 0.15f;
+  return TAPE.height * 0.1f;
 }
 
 class JamImage

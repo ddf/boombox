@@ -8,6 +8,8 @@ class Inventory
   // the jam the mouse is currently over
   private Jam       mCurrentJam;
   
+  private ArrayList<EffectPickup> mEffects;
+  
   // how tall the inventory box is
   private float     mHeight = 50.f;
   // Y coord of the bottom of the box
@@ -22,7 +24,7 @@ class Inventory
   // how much time has gone by in our lerp
   private float     mCurrTime;
   
-  private float     mTapeScale = 0.75f;
+  private float     mTapeScale = 1.f;
   
   
   // is the mouse inside of us?
@@ -31,6 +33,7 @@ class Inventory
   Inventory()
   {
     mJams = new ArrayList<Jam>();
+    mEffects = new ArrayList<EffectPickup>();
     mCurrentJam = null;
     mCurrTime = mLerpTime;
     open();
@@ -122,6 +125,31 @@ class Inventory
       
       mCurrentJam.queue();
     }
+    else
+    {
+      for(int i = 0; i < mEffects.size(); ++i)
+      {
+        EffectPickup e = mEffects.get(i);
+        println("Testing effect " + i);
+        if ( e.pointInside( mouseX, mouseY - mBottom ) )
+        {
+          if ( e.isActive() == false )
+          {
+            println("Activating effect.");
+            e.activate();
+          }
+          else
+          {
+            println("Deactivating effect.");
+            e.deactivate();
+          }
+        }
+        else
+        {
+          println("Point wasn't inside.");
+        }
+      }
+    }
   }
   
   void open()
@@ -167,6 +195,33 @@ class Inventory
     
   }
   
+  void drawEffectGroup( ArrayList<EffectPickup> group )
+  {
+    int groupSize = group.size();
+    // println("Drawing a group of " + groupSize + " jams.");
+    if ( groupSize > 0 )
+    {
+      fill( 80 );
+      noStroke();
+      rectMode( CORNERS );
+      
+      EffectPickup first = group.get(0);
+      EffectPickup last = group.get( groupSize - 1 );
+      float minX = first.getPos().x - first.getWidth() * 0.5f - 10;
+      float minY = first.getPos().y - first.getHeight() * 0.5f - 6;
+      float maxX = last.getPos().x + last.getWidth() * 0.5f + 10;
+      float maxY = last.getPos().y + last.getHeight() * 0.5f + 6;
+     
+      rect( minX, minY, maxX, maxY );
+      
+      for(int i = 0; i < groupSize; i++)
+      {
+        group.get(i).draw();
+      }
+    }
+    
+  }
+  
   void draw()
   {
     pushMatrix();
@@ -199,11 +254,24 @@ class Inventory
         j.setPos( offset, -mHeight / 2 );
         group.add( j );
         
-        offset += (int)j.getWidth() * 2 - 4.f;
+        offset += (int)j.getWidth() * 1.5f;
         prev = j;
       }
       
       drawGroup( group );
+      
+      offset += 16;
+      
+      EffectPickup[] effects = mEffects.toArray( new EffectPickup[] {} );
+      for( int i = 0; i < effects.length; ++i)
+      {
+        EffectPickup e = effects[i];
+        
+        e.setPos( offset, -mHeight / 2 );
+        offset += (int)e.getWidth() * 2f;
+      }
+      
+      drawEffectGroup( mEffects );
       
       // dividing line
       stroke( 255, 255, 255 );
@@ -215,9 +283,13 @@ class Inventory
   
   void addJam( Jam j )
   {
-    tapeGet.trigger();
     j.setScale( mTapeScale );
     mJams.add( j );
     Collections.sort( mJams );
+  }
+  
+  void addEffect( EffectPickup e )
+  {
+    mEffects.add( e );
   }
 }

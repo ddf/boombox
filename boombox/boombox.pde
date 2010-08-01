@@ -35,7 +35,7 @@ AudioOutput mainOut;
 
 // controls
 Line lowPassCutoff;
-float lowPassCutoffSweepLength;
+float lowPassCutoffSweepLength; // set in setup()
 float lowPassCutoffHi = 21000.f;
 float lowPassCutoffLo = 400.f;
 
@@ -64,6 +64,7 @@ ArrayList<Jam> allJams;
 // jams that are out in the world
 // just, like, minding their own business, yo
 ArrayList<Jam> worldJams;
+ArrayList<EffectPickup> worldEffects;
 
 // where my camera at
 float cameraPosition = 0;
@@ -76,6 +77,8 @@ void setup()
   
   animationSystem = new AnimationSystem(this);
   animationSystem.loadAnimations( "animation/animations.xml" );
+  
+  loadEffectImage();
 
   float tempo = 121.f;
   float beatPerSec = 60.f / tempo;
@@ -86,8 +89,8 @@ void setup()
   sampleRepeat = new SampleAndRepeat( tempo, 0.5f );
   float grainRatio = 0.03f;
   granulate = new GranulateSteady( beatPerSec * (0.125f - grainRatio), beatPerSec * (0.125f + grainRatio), 0.0005f, // grainLength, spaceLength, fadeLength
-  0.f, 1.f // min and max amplitude
-  );
+                                   0.f, 1.f // min and max amplitude
+                                 );
   granulateBypass = new Bypass( granulate );
   granulateBypass.activate();
   lowPass = new ChebFilter( lowPassCutoffHi, ChebFilter.LP, 2.0f, 4, mainOut.sampleRate() );
@@ -110,7 +113,7 @@ void setup()
   allJams = new ArrayList<Jam>();
 
   allJams.add( new Jam("backing_loop.wav", JamCategory.OTHER, color(0,0,0), -100, -100 ) );
-  allJams.add( new Jam("drums_LP01.wav", JamCategory.DRUMS, #FF0000, 580, 120) );
+  allJams.add( new Jam("drums_LP01.wav", JamCategory.DRUMS, #00FFFF, 580, 120) );
   allJams.add( new Jam("bass_LP01.wav", JamCategory.BASS, #FFA500, 600, 400) );
   allJams.add( new Jam("blip_LP01.wav", JamCategory.BLIP, #FFFF00, 200, 600) );
   allJams.add( new Jam("pad_LP04.wav", JamCategory.PAD, #008000, 100, 450) );
@@ -134,6 +137,12 @@ void setup()
   worldJams.add( allJams.get(8) );
   worldJams.add( allJams.get(9) );
   worldJams.add( allJams.get(11));
+  
+  worldEffects = new ArrayList<EffectPickup>();
+  
+  worldEffects.add( new EffectPickup( new LineSweep( lowPassCutoff, lowPassCutoffHi, lowPassCutoffLo, lowPassCutoffSweepLength ), 800, 450, #CCCCCC ) );
+  worldEffects.add( new EffectPickup( new Bypasser( granulateBypass ), 1350, 400, #FF0000 ) );
+  worldEffects.add( new EffectPickup( new SampleRepeat( sampleRepeat ), 3150, 410, #00AA00 ) );
 
   player = new Avatar( 50, height - 100 );
 
@@ -206,7 +215,8 @@ void draw()
   {
     Jam j = iter.next();
 
-    if ( player.getPos().dist( j.getPos() ) < player.getSize() )
+    PVector pos = player.getPos();
+    if ( j.pointInside( pos.x, pos.y - player.getHeight() * 0.3f ) )
     {
       iter.remove();
       inventory.addJam( j );
@@ -215,6 +225,24 @@ void draw()
     else
     {
       j.draw();
+    }
+  }
+  
+  Iterator<EffectPickup> eiter = worldEffects.iterator();
+  while( eiter.hasNext() )
+  {
+    EffectPickup e = eiter.next();
+    
+    PVector pos = player.getPos();
+    if ( e.pointInside( pos.x, pos.y - player.getHeight() * 0.3f ) )
+    {
+      eiter.remove();
+      inventory.addEffect( e );
+      player.collect();
+    }
+    else
+    {
+      e.draw();
     }
   }
 
