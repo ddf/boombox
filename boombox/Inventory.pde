@@ -111,7 +111,7 @@ class Inventory
   {
     if ( mCurrentJam != null )
     {
-      if ( mCurrentJam.isPlaying() )
+      if ( mCurrentJam.isPlaying() || mCurrentJam.willPlay() )
       {
         player.eject();
       }

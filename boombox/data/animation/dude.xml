@@ -69,11 +69,13 @@
 		<transition from="yesjam" to="play" event="play"/>
 		
 		<transition from="nojam" to="yesjam" event="yesjam"/>
+		<transition from="nojam" to="idle" event="idle"/>
 		
 		<transition from="idle" to="to_jam" event="jam"/>
 		
 		<transition from="to_jam" to="jam" event="jam_loop"/>
 		<transition from="jam" to="jam_to_idle" event="idle"/>
+		<transition from="jam" to="eject" event="eject"/>
 		<transition from="jam_to_idle" to="idle" event="jam_to_idle"/>
 		
 	</behavior>

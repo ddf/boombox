@@ -13,10 +13,9 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
   boolean         mJammed;
   // how many times my jam has looped
   private int     mLoops;
-  // is the mouse over me?
-  boolean         mMousedOver;
-  // is the player close enough to click on me?
-  boolean         mCanClick;
+  
+  // is the player close enough to jam?
+  boolean         mCanJam;
   // did I give my jam away
   boolean         mGaveJam;
   
@@ -39,6 +38,7 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
     
     mJammed = false;
     mGaveJam = false;
+    mCanJam = false;
     mLoops = 0;
     
     mAnims = new AnimationStateMachine( animationSystem, new XMLElement(boombox.this, "animation/dude.xml") );
@@ -50,66 +50,96 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
     return mRect.getPos();
   }
   
+  void ejectJam()
+  {
+    mAnims.sendEvent( "eject" );
+    mMyJam.queue();
+    mLoops = 0;
+    jamSyncer.removeLoopListener( this ); 
+    
+    if ( player.isJamming() )
+    {
+      player.idle();
+    }
+  }
+  
   void update( float dt )
   {
-    if ( inventory.isActive() == false )
+    if ( mGaveJam == false )
     {
-      mMousedOver = false;
-      mouse.setState( Mouse.EMPTY );
-      if ( mJammed == false )
-      {
-        mCanClick = mJamArea.pointInside( player.getPos() );
+        boolean canHear = mJamArea.pointInside( player.getPos() );
         
-        if ( mCanClick && mRect.pointInside( mouseX + cameraOffset, mouseY ) )
+        if ( canHear )
         {
-          mMousedOver = true;
-          mouse.setState( Mouse.JAM );
+          boolean wantToJam = wantToJam();
+        
+          if ( wantToJam && mMyJam.isPlaying() == false && mMyJam.willPlay() == false && mMyJam.willEject() == false )
+          {
+            mAnims.sendEvent( "yesjam" );
+          }
+          else if ( wantToJam == false )
+          {
+            if ( (mMyJam.isPlaying() || mMyJam.willPlay()) && mMyJam.willEject() == false )
+            {
+              ejectJam();
+            }
+            else
+            {
+              mAnims.sendEvent( "nojam" );
+            }
+          }
         }
-      }
+        else
+        {
+          if ( mMyJam.willPlay() )
+          {
+            ejectJam();
+          }
+          else if ( mAnims.getCurrentStateName().equals( "eject" ) == false )
+          {
+            mAnims.sendEvent( "idle" );
+          }
+        }
     }
-    
-    if ( mMyJam.isPlaying() )
-    {
-      mAnims.sendEvent( "jam" );
-      if ( mGaveJam == false )
+    else
+    {   
+      if ( mMyJam.isPlaying() )
       {
-        player.jam();
+        mAnims.sendEvent( "jam" );
       }
-    }
-    else if ( mMyJam.willPlay() == false && mMyJam.willEject() == false )
-    {
-      mAnims.sendEvent( "idle" );
+      else if ( mMyJam.willPlay() == false && mMyJam.willEject() == false )
+      {
+        mAnims.sendEvent( "idle" );
+      }
     }
     
     mAnims.update( dt );
   }
   
-  void mousePressed()
+  boolean wantToJam()
   {
-    if ( mMousedOver )
-    {
       for(int i = 0; i < mWantToHear.length; ++i)
       {
         // bail if the player isn't playing something I want to hear
-        if ( mWantToHear[i].isPlaying() == false )
+        if ( (mWantToHear[i].isPlaying() == false && mWantToHear[i].willPlay() == false) || mWantToHear[i].willEject() )
         {
-          println("Something I want to hear isn't playing!");
-          // trigger the head shake anim
-          mAnims.sendEvent("nojam");
-          return;   
+          // println("Something I want to hear isn't playing!");
+          return false;
         }
       }
       
-      // yes all good
-      mJammed = true;
-      mAnims.sendEvent("yesjam");
-    }
+      return true;
   }
   
   void looped()
   {
     mLoops++;
-    if ( mLoops == 2 )
+    if ( mLoops == 1 )
+    {
+      mAnims.sendEvent( "jam" );
+      player.jam();
+    }
+    else if ( mLoops == 2 )
     {
       inventory.addJam( mMyJam );
       mGaveJam = true;
@@ -134,7 +164,10 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
       tint(0, 255, 255);
       imageMode(CENTER);
       translate( mPos.x, mPos.y - mAnims.currentAnimation().height() / 2.f );
-      scale( -1, 1 );
+      if ( player.getPos().x < mPos.x )
+      {
+        scale( -1, 1 );
+      }
       mAnims.draw();
     }
     popMatrix();
@@ -160,7 +193,7 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
       rect( pos.x, bubbleCenterY, bubbleWidth, bubbleHeight );
       
       // these are the tapes in the bubble
-      if ( mJammed == false )
+      if ( mMyJam.isPlaying() == false && mMyJam.willPlay() == false )
       {
         float startX = pos.x - (bubbleWidth*0.5f) + (getTapeWidth()*0.5f) + 8;
         for(int i = 0; i < mWantToHear.length; i++)

@@ -224,11 +224,6 @@ void draw()
 void mousePressed()
 {
   inventory.mousePressed();
-  for(int i = 0; i < theStage.mDudes.size(); i++ )
-  {
-    Dude dude = theStage.mDudes.get(i);
-    dude.mousePressed();
-  }
 }
 
 void mouseMoved()

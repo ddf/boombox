@@ -86,11 +86,19 @@ class JamSyncer extends UGen
   void queueJam( Jam jam )
   {
     boolean bActive = mActive.contains(jam);
-    if ( bActive == false && mToAdd.contains(jam) == false )
+    if ( bActive == false )
     {
-      // println("Adding a jam that is about " + jam.getMetaData().sampleFrameCount() + " samples long. We calc'd one loop at " + mSamplesInMeasure);
-      mToAdd.add( jam );
-      tapePlay.trigger();
+      if ( mToAdd.contains(jam)  )
+      {
+        mToAdd.remove(jam);
+        tapeStop.trigger();
+      }
+      else
+      {
+        // println("Adding a jam that is about " + jam.getMetaData().sampleFrameCount() + " samples long. We calc'd one loop at " + mSamplesInMeasure);
+        mToAdd.add( jam );
+        tapePlay.trigger();
+      }
     }
     else if ( bActive == true && mToRemove.contains(jam) == false )
     {

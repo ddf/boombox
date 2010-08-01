@@ -133,6 +133,11 @@ class Avatar
     mAnims.sendEvent( "jam" );
   }
   
+  boolean isJamming()
+  {
+    return mAnims.getCurrentStateName().equals( "jam" );
+  }
+  
   void idle()
   {
     mAnims.sendEvent( "idle" );
