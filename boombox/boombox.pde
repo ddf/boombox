@@ -190,7 +190,13 @@ void draw()
 
   camera( cameraPosition, height/2.0, (height/2.0) / tan(PI*60.0 / 360.0), cameraPosition, height/2.0, 0, 0, 1, 0);
 
-  background(0);
+  background(24);
+  if ( false )
+  {
+    fill(0, 64);
+    rectMode(CORNER);
+    rect( cameraOffset - 5, 0, width + 5, height );
+  }
 
   // will also draw the player sorted properly with stage elements
   theStage.draw();

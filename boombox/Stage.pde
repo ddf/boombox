@@ -4,6 +4,9 @@ class Stage
   Rectangle theGround;
   Rectangle moreGround;
   
+  PImage theSky;
+  PImage groundTex;
+  
   // all the elevators in the level
   ArrayList<Elevator> mElevators;
   ArrayList<Rectangle> mPlatforms;
@@ -21,6 +24,9 @@ class Stage
   
   Stage()
   {
+    theSky = loadImage("bg_01.png");
+    groundTex = loadImage("ground_01.png");
+    
     mElevators = new ArrayList<Elevator>();
     mPlatforms = new ArrayList<Rectangle>();
     mDudes = new ArrayList<Dude>();
@@ -216,10 +222,7 @@ class Stage
         }
       }
       
-      if ( currCollision.pointInside( currPos ) )
-      {
-        currCollision.constrain( desiredPos );
-      }   
+      currCollision.constrain( desiredPos );
     }    
   }
   
@@ -229,28 +232,48 @@ class Stage
     
     // the sky
     pushMatrix();
+    if ( false )
     {
       translate( cameraOffset, 0, 0 );
-      noStroke();
-      fill(120, 162, 240);
-      rect(0, 0, width, height);
+      tint(0);
+      imageMode(CORNER);
+      image(theSky, 0, 0, width, height);
+      
     }
     popMatrix();
+    
+    // waveform in the sky
+    {
+      stroke(255, 0, 162, 128);
+      strokeWeight(2);
+      float waveCenter = 200;
+      float sampleWidth = 8;
+      float sampleSpacing = 0;
+      for(int i = 0; i < mainOut.bufferSize() - 1; ++i)
+      {
+        float x1 = i * (sampleWidth + sampleSpacing);
+        float x2 = x1 + sampleWidth;
+        float y1 = waveCenter - mainOut.mix.get(i) * 100;
+        float y2 = waveCenter - mainOut.mix.get(i+1) * 100;
+        line(x1, y1, x2, y2);
+      }
+    }
     
     rectMode(CENTER);
     
     // subtle equalizer clouds
+    if ( false )
     {
-      float leftBuff = 25.f;
+      float leftBuff = 100.f;
       float barWidth = 25.f;
       float barHeight = 25.f;
       noStroke();
-      fill( 125, 168, 245 );
+      fill( 255, 128 );
       mFFT.forward( mainOut.mix );
       int startAt = 7;
       for(int i = 0; i < mFFT.avgSize() - startAt; ++i)
       {
-        float x = 25 + barWidth * i + leftBuff * i;
+        float x = 55 + barWidth * i + leftBuff * i;
         float y = horizonHeight - 120 - i * 4.3f;
         float s = mFFT.getAvg(i+startAt) * 0.5f;
         rect( x, y, barWidth + s, barHeight + s ); 
@@ -261,17 +284,46 @@ class Stage
     
     // the ground and horizon
     {
-      noStroke();
-      fill(105, 122, 144);
-      rect( -10, horizonHeight, theGround.getBounds().maxX + 30, height + 10);
-      
-      Rectangle.Bounds moreBounds = moreGround.getBounds();
-      rect( moreBounds.minX - 30, horizonHeight, moreBounds.maxX + 10, height + 10);    
-       // horizon line
-      strokeWeight(2);
-      stroke(179, 183, 188);
-      line( -10, horizonHeight, theGround.getBounds().maxX + 30, horizonHeight );
-      line( moreBounds.minX - 30, horizonHeight, moreBounds.maxX + 30, horizonHeight );
+//      noStroke();
+//      fill(105, 122, 144);
+//      rect( -10, horizonHeight, theGround.getBounds().maxX + 30, height + 10);
+//      
+       Rectangle.Bounds moreBounds = moreGround.getBounds();
+//      rect( moreBounds.minX - 30, horizonHeight, moreBounds.maxX + 10, height + 10);
+  
+        noFill();
+        noStroke();
+        float lowY = horizonHeight;
+        float hiY = horizonHeight + groundTex.height;
+        beginShape(QUADS);
+        texture( groundTex );
+        textureMode( NORMALIZED );
+        tint(255);
+        // first ground
+        for( int x = -10; x < theGround.getBounds().maxX + 30; x += groundTex.width )
+        {
+          vertex(x, lowY, 0, 0.08);
+          vertex(x, hiY, 0, 1);
+          vertex(x + groundTex.width, hiY, 1, 1);
+          vertex(x + groundTex.width, lowY, 1, 0.08);
+        }
+        
+        // second ground
+        for( float x = moreGround.getBounds().minX - 30; x < moreGround.getBounds().maxX + 30; x += groundTex.width )
+        {
+          vertex(x, lowY, 0, 0);
+          vertex(x, hiY, 0, 1);
+          vertex(x + groundTex.width, hiY, 1, 1);
+          vertex(x + groundTex.width, lowY, 1, 0);
+        }
+        
+        endShape();
+        
+        // horizon line
+        strokeWeight(2);
+        stroke(0);
+        line( -10, horizonHeight, theGround.getBounds().maxX + 30, horizonHeight );
+        line( moreBounds.minX - 30, horizonHeight, moreBounds.maxX + 30, horizonHeight );
     }
     
     // the platforms

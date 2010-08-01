@@ -107,6 +107,7 @@ class Avatar
       translate( mPos.x, mPos.y  - mAnims.currentAnimation().height() / 2.f );
       scale( mScale, 1 );
       mAnims.draw();
+      
     }
     popMatrix();
   }

@@ -59,6 +59,7 @@
 		
 		<transition from="idle" to="play" event="play"/>
 		<transition from="play" to="idle" event="idle"/>
+		<transition from="play" to="jam" event="jam"/>
 		
 		<transition from="idle" to="eject" event="eject"/>
 		<transition from="eject" to="idle" event="idle"/>
