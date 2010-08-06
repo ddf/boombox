@@ -206,7 +206,14 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
       else
       {
         mMyJam.setPos( pos.x, bubbleCenterY );
-        mMyJam.draw();
+        if ( mMyJam.isPlaying() )
+        {
+          mMyJam.drawOnlyImage();
+        }
+        else
+        {
+          mMyJam.draw();
+        }
       }
     }
   }

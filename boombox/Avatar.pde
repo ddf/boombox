@@ -61,6 +61,16 @@ class Avatar
     return new PVector( mPos.x, mPos.y );
   }
   
+  Rectangle getCollisionRectangle()
+  {
+    return new Rectangle( mPos.x, mPos.y, getWidth() * 0.8f, getHeight() * 0.8f, CENTER, BOTTOM );
+  }
+  
+  float getWidth()
+  {
+    return mAnims.currentAnimation().width();
+  }
+  
   float getHeight()
   {
     return mAnims.currentAnimation().height();

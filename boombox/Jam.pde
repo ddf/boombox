@@ -6,12 +6,12 @@ PImage TAPE = null;
 
 float getTapeWidth()
 {
-  return TAPE.width * 0.1f;
+  return TAPE.width * 0.4f;
 }
 
 float getTapeHeight()
 {
-  return TAPE.height * 0.1f;
+  return TAPE.height * 0.4f;
 }
 
 class JamImage
@@ -23,7 +23,7 @@ class JamImage
     mTint = c;
     if ( TAPE == null )
     {
-      TAPE = loadImage("pixeltape.gif");
+      TAPE = loadImage("cassette.jpg");
     }
   }
 
@@ -54,6 +54,7 @@ class Jam extends UGen
   private float[] mRightChannel;
   private int     mSampleNum;
   private boolean mPaused;
+  private Rectangle mCollision;
   
   private JamCategory mCategory;
 
@@ -138,6 +139,11 @@ class Jam extends UGen
   {
     mScale = s;
   }
+  
+  Rectangle getCollisionRectangle()
+  {
+    return new Rectangle( mPos.x, mPos.y, getWidth(), getHeight(), LEFT, TOP ); 
+  }
 
   float getWidth()
   {
@@ -154,6 +160,11 @@ class Jam extends UGen
     float hw = getWidth() * 0.5f;
     float hh = getHeight() * 0.5f;
     return ( x > mPos.x - hw && x < mPos.x + hw && y > mPos.y - hh && y < mPos.y + hh );
+  }
+  
+  void drawOnlyImage()
+  {
+    mImage.draw( mPos.x, mPos.y, mScale );
   }
 
   void draw()

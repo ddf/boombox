@@ -69,6 +69,11 @@ class EffectPickup
   {
     mScale = s;
   }
+  
+  Rectangle getCollisionRectangle()
+  {
+    return new Rectangle( mPos.x, mPos.y, getWidth(), getHeight(), CENTER, CENTER );
+  }
 
   float getWidth()
   {

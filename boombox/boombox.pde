@@ -74,10 +74,10 @@ float cameraOffset = 0;
 void setup()
 {
   size(640, 480, P3D);
-  
+
   animationSystem = new AnimationSystem(this);
   animationSystem.loadAnimations( "animation/animations.xml" );
-  
+
   loadEffectImage();
 
   float tempo = 121.f;
@@ -89,8 +89,8 @@ void setup()
   sampleRepeat = new SampleAndRepeat( tempo, 0.5f );
   float grainRatio = 0.03f;
   granulate = new GranulateSteady( beatPerSec * (0.125f - grainRatio), beatPerSec * (0.125f + grainRatio), 0.0005f, // grainLength, spaceLength, fadeLength
-                                   0.f, 1.f // min and max amplitude
-                                 );
+  0.f, 1.f // min and max amplitude
+  );
   granulateBypass = new Bypass( granulate );
   granulateBypass.activate();
   lowPass = new ChebFilter( lowPassCutoffHi, ChebFilter.LP, 2.0f, 4, mainOut.sampleRate() );
@@ -137,9 +137,9 @@ void setup()
   worldJams.add( allJams.get(8) );
   worldJams.add( allJams.get(9) );
   worldJams.add( allJams.get(11));
-  
+
   worldEffects = new ArrayList<EffectPickup>();
-  
+
   worldEffects.add( new EffectPickup( new LineSweep( lowPassCutoff, lowPassCutoffHi, lowPassCutoffLo, lowPassCutoffSweepLength ), 800, 450, #CCCCCC ) );
   worldEffects.add( new EffectPickup( new Bypasser( granulateBypass ), 1350, 400, #FF0000 ) );
   worldEffects.add( new EffectPickup( new SampleRepeat( sampleRepeat ), 3150, 410, #00AA00 ) );
@@ -158,6 +158,11 @@ void setup()
 void draw()
 {
   float dt = 1.f / frameRate;
+
+  if ( inventory.isActive() == false && mousePressed )
+  {
+    doMouseMove();
+  }
 
   theStage.update( dt );
   player.update( dt );
@@ -215,8 +220,7 @@ void draw()
   {
     Jam j = iter.next();
 
-    PVector pos = player.getPos();
-    if ( j.pointInside( pos.x, pos.y - player.getHeight() * 0.3f ) )
+    if ( player.getCollisionRectangle().collidesWith( j.getCollisionRectangle() ) )
     {
       iter.remove();
       inventory.addJam( j );
@@ -227,14 +231,13 @@ void draw()
       j.draw();
     }
   }
-  
+
   Iterator<EffectPickup> eiter = worldEffects.iterator();
   while( eiter.hasNext() )
   {
     EffectPickup e = eiter.next();
-    
-    PVector pos = player.getPos();
-    if ( e.pointInside( pos.x, pos.y - player.getHeight() * 0.3f ) )
+
+    if ( player.getCollisionRectangle().collidesWith( e.getCollisionRectangle() ) )
     {
       eiter.remove();
       inventory.addEffect( e );
@@ -263,6 +266,42 @@ void mousePressed()
 void mouseMoved()
 {
   inventory.mouseMoved();
+}
+
+void mouseReleased()
+{
+  player.setXDir( 0 );
+  player.setYDir( 0 );
+}
+
+void doMouseMove()
+{
+  PVector pos = player.getPos();
+  if ( cameraOffset + mouseX < pos.x - player.getWidth() * 0.4f )
+  {
+    player.setXDir( -1 );
+  }
+  else if ( cameraOffset + mouseX > pos.x + player.getWidth() * 0.4f )
+  {
+    player.setXDir( 1 );
+  }
+  else
+  {
+    player.setXDir( 0 );
+  }
+
+  if ( mouseY < pos.y - player.getHeight() )
+  {
+    player.setYDir( -1 );
+  }
+  else if ( mouseY > pos.y )
+  {
+    player.setYDir( 1 );
+  }
+  else
+  {
+    player.setYDir( 0 );
+  }
 }
 
 boolean filterOn = false;

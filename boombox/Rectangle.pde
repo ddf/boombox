@@ -19,6 +19,17 @@ class Rectangle
       return ( x >= minX && x <= maxX && y >= minY && y <= maxY );
     }
     
+    boolean collidesWith( Bounds otherBounds )
+    {
+      if ( maxY < otherBounds.minY ) return false;
+      if ( minY > otherBounds.maxY ) return false;
+
+      if ( maxX < otherBounds.minX ) return false;
+      if ( minX > otherBounds.maxX ) return false;
+
+      return true;
+    }
+    
     void constrain( PVector pos )
     {
       pos.x = PApplet.constrain( pos.x, minX, maxX );
@@ -84,6 +95,11 @@ class Rectangle
   boolean pointInside( float x, float y )
   {
     return mBounds.pointInside( x, y );
+  }
+  
+  boolean collidesWith( Rectangle otherRect )
+  {
+    return mBounds.collidesWith( otherRect.mBounds );
   }
   
   void calcBounds()
