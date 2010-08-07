@@ -9,6 +9,7 @@ class Stage
   
   // all the elevators in the level
   ArrayList<Elevator> mElevators;
+  ArrayList<Speaker> mSpeakers;
   ArrayList<Rectangle> mPlatforms;
   ArrayList<Dude> mDudes;
   // I'm calling it collisions, but it's really just all walkable space
@@ -31,11 +32,12 @@ class Stage
     mPlatforms = new ArrayList<Rectangle>();
     mDudes = new ArrayList<Dude>();
     mCollision = new ArrayList<Rectangle>();
+    mSpeakers = new ArrayList<Speaker>();
     
     float topOfGround = horizonHeight + 5;
     
-    theGround = new Rectangle( 0, topOfGround, 2100, height - horizonHeight - 10 , LEFT, TOP );
-    moreGround = new Rectangle( 2450, topOfGround, 1500, height - horizonHeight - 10, LEFT, TOP );
+    theGround = new Rectangle( 0, topOfGround, 2150, height - horizonHeight - 10 , LEFT, TOP );
+    moreGround = new Rectangle( 2400, topOfGround, 1500, height - horizonHeight - 10, LEFT, TOP );
     
     mCollision.add( theGround );
     mCollision.add( moreGround );
@@ -59,6 +61,9 @@ class Stage
       mElevators.add( elevator );
       
       mCollision.add( elevator.getRect() );
+      
+      mSpeakers.add( new Speaker( 455, topOfGround, 0.66f ) );
+      mSpeakers.add( new Speaker( 805, topOfGround, 0.66f ) );
     }
     
     {
@@ -83,6 +88,9 @@ class Stage
       
       mCollision.add( elevLeft.getRect() );
       mCollision.add( elevRight.getRect() );
+      
+      mSpeakers.add( new Speaker( 1255, topOfGround, 0.41f ) );
+      mSpeakers.add( new Speaker( 1545, topOfGround, 0.41f ) );
     }
           
     {
@@ -102,6 +110,9 @@ class Stage
       
       mCollision.add( elevLeft.getRect() );
       mCollision.add( elevRight.getRect() );
+      
+      mSpeakers.add( new Speaker( 2145, topOfGround, 0.41f ) );
+      mSpeakers.add( new Speaker( 2405, topOfGround, 0.41f ) );
     }
     
     {
@@ -113,7 +124,8 @@ class Stage
       mDudes.add( dudeGround );
       mDudes.add( dudePlatform );
       
-      Rectangle leftPlat = makePlatform( 2675, 125, 2900 - 2675 );
+      float leftPlatWidth = 2900 - 2675;
+      Rectangle leftPlat = makePlatform( 2675, 125, leftPlatWidth );
       Rectangle rightPlat = makePlatform( 3000, 225, 150 );
       
       Elevator elevLow = new Elevator( 2625, topOfGround, topOfGround - 125, allJams.get(10) );
@@ -129,6 +141,9 @@ class Stage
     
       mCollision.add( elevLow.getRect() );
       mCollision.add( elevHigh.getRect() );
+      
+      mSpeakers.add( new Speaker( 2675 + leftPlatWidth * 0.5f, topOfGround, 0.8f ) );
+      mSpeakers.add( new Speaker( 3075, topOfGround, 0.39f ) );
     }
     
     {
@@ -154,6 +169,10 @@ class Stage
     
       mCollision.add( elevLow.getRect() );
       mCollision.add( elevHigh.getRect() );
+      
+      mSpeakers.add( new Speaker( 3425, topOfGround, 0.39f ) );
+      mSpeakers.add( new Speaker( 3525, topOfGround, 0.39f ) );
+      mSpeakers.add( new Speaker( 3725, topOfGround, 0.8f ) );
     }
     
     mFFT = new FFT( mainOut.bufferSize(), mainOut.sampleRate() );
@@ -234,7 +253,7 @@ class Stage
     pushMatrix();
     if ( false )
     {
-      translate( cameraOffset, 0, 0 );
+      translate( gameplayScreen.cameraOffset, 0, 0 );
       tint(0);
       imageMode(CORNER);
       image(theSky, 0, 0, width, height);
@@ -322,19 +341,28 @@ class Stage
         // horizon line
         strokeWeight(2);
         stroke(0);
-        line( -10, horizonHeight, theGround.getBounds().maxX + 30, horizonHeight );
+        line( -10, horizonHeight, theGround.getBounds().maxX + 34, horizonHeight );
         line( moreBounds.minX - 30, horizonHeight, moreBounds.maxX + 30, horizonHeight );
+    }
+    
+    // the speakers
+    {
+      for(int i = 0; i < mSpeakers.size(); ++i)
+      {
+        mSpeakers.get(i).draw();
+      }
     }
     
     // the platforms
     {
-      noStroke();
-      fill(105, 122, 144);
       
       for (int i = 0; i < mPlatforms.size(); i++)
       {
         Rectangle thePlatform = mPlatforms.get(i);
         Rectangle.Bounds plat = thePlatform.getBounds();
+        
+        noStroke();
+        fill(105, 122, 144);
         rect( plat.minX, plat.minY, plat.maxX, plat.maxY + 10 );
         
         strokeWeight(2);
@@ -403,6 +431,15 @@ class Stage
       for(int i = 0; i < dudesInFront.size(); i++)
       {
         dudesInFront.get(i).draw();
+      }
+    }
+    
+    // finally shadow pass
+    if ( false )
+    {
+      for(int i = 0; i < mSpeakers.size(); ++i)
+      {
+        mSpeakers.get(i).drawShadow();
       }
     }
     

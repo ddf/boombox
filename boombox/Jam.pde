@@ -6,37 +6,63 @@ PImage TAPE = null;
 
 float getTapeWidth()
 {
-  return TAPE.width * 0.4f;
+  return TAPE.width;
 }
 
 float getTapeHeight()
 {
-  return TAPE.height * 0.4f;
+  return TAPE.height;
 }
 
 class JamImage
 {
   private color mTint;
+  private PImage mTape;
+  private AnimationInstance mTeethTurn;
+  private AnimationInstance mTeethStill;
+  private AnimationInstance mCurrentAnim;
 
   JamImage( color c )
   {
     mTint = c;
-    if ( TAPE == null )
-    {
-      TAPE = loadImage("cassette.jpg");
-    }
+    mTape = TAPE;
+    mTeethTurn = animationSystem.createAnimationInstance( "tapeTeethTurn" );
+    mTeethStill = animationSystem.createAnimationInstance( "tapeTeethStill" );
+    
+    mCurrentAnim = mTeethStill;
   }
 
   color getColor()
   {
     return mTint;
   }
+  
+  void update( float dt )
+  {
+    mCurrentAnim.advance( dt );
+  }
+  
+  void play()
+  {
+    mCurrentAnim = mTeethTurn;
+  }
+  
+  void pause()
+  {
+    mCurrentAnim = mTeethStill;
+  }
 
   void draw( float x, float y, float s )
   {
     imageMode( CENTER );
     tint( mTint );
-    image( TAPE, x, y, getTapeWidth() * s, getTapeHeight() * s );
+    pushMatrix();
+      translate(x,y);
+      scale(s);
+      image( TAPE, 0, 0, getTapeWidth(), getTapeHeight() );
+      tint( 220 );
+      mCurrentAnim.draw();
+    popMatrix();
   }
 }
 
@@ -47,7 +73,7 @@ class Jam extends UGen
           implements Comparable<Jam>
 {
   private PVector mPos;
-  private float   mWidth, mHeight, mScale;
+  private float   mScale;
   private JamImage mImage;
   private String  mName;
   private float[] mLeftChannel;
@@ -61,8 +87,6 @@ class Jam extends UGen
   Jam( String jamName, JamCategory category, color c, float x, float y )
   {
     mPos = new PVector( x, y );
-    mWidth = 32.f;
-    mHeight = 24.f;
     mScale = 1.f;
     mImage = new JamImage(c);
     mName = jamName;
@@ -147,12 +171,12 @@ class Jam extends UGen
 
   float getWidth()
   {
-    return mWidth * mScale;
+    return getTapeWidth() * mScale;
   }
   
   float getHeight()
   {
-    return mHeight * mScale;
+    return getTapeHeight() * mScale;
   }
 
   boolean pointInside( float x, float y )
@@ -160,6 +184,19 @@ class Jam extends UGen
     float hw = getWidth() * 0.5f;
     float hh = getHeight() * 0.5f;
     return ( x > mPos.x - hw && x < mPos.x + hw && y > mPos.y - hh && y < mPos.y + hh );
+  }
+  
+  void update( float dt )
+  {
+    if ( isPlaying() )
+    {
+      mImage.play();
+    }
+    else
+    {
+      mImage.pause();
+    }
+    mImage.update( dt );
   }
   
   void drawOnlyImage()
@@ -190,12 +227,12 @@ class Jam extends UGen
     {
       line( mPos.x - 5, mPos.y, mPos.x + 5, mPos.y );
     }
-    else if ( isPlaying() )
-    {
-      fill(0);
-      rectMode( CENTER );
-      rect( mPos.x, mPos.y, 10, 10 );
-    }
+//    else if ( isPlaying() )
+//    {
+//      fill(0);
+//      rectMode( CENTER );
+//      rect( mPos.x, mPos.y, 10, 10 );
+//    }
   }
 
   boolean willPlay()

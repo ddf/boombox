@@ -51,6 +51,11 @@ class Inventory
         mBottom = mTarget;
       }
     }
+    
+    for(int i = 0; i < mJams.size(); ++i)
+    {
+      mJams.get(i).update( dt );
+    }
 
     boolean mouseWasIn = mMouseInside;
     mMouseInside = mouseY < mBottom + 15.f;
@@ -171,7 +176,7 @@ class Inventory
     // println("Drawing a group of " + groupSize + " jams.");
     if ( groupSize > 0 )
     {
-      fill( 80 );
+      fill( 100 );
       noStroke();
       rectMode( CORNERS );
 
@@ -201,7 +206,7 @@ class Inventory
     // println("Drawing a group of " + groupSize + " jams.");
     if ( groupSize > 0 )
     {
-      fill( 80 );
+      fill( 100 );
       noStroke();
       rectMode( CORNERS );
 
@@ -251,19 +256,19 @@ class Inventory
         if ( prev != null && prev.getCategory() != j.getCategory() )
         {
           drawGroup( group );
-          offset += 8;
+          offset += 12;
         }
 
         j.setPos( offset, -mHeight / 2 );
         group.add( j );
 
-        offset += (int)j.getWidth() * 1.3f;
+        offset += (int)j.getWidth() + 4;
         prev = j;
       }
 
       drawGroup( group );
 
-      offset += 2;
+      offset += 4;
 
       EffectPickup[] effects = mEffects.toArray( new EffectPickup[] {
       } 

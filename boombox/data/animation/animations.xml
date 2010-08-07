@@ -101,5 +101,14 @@
         <frame>yes_jam0007.png</frame>
         <frame>yes_jam0008.png</frame>
     </animation>
+    
+    <animation name="tapeTeethStill" fps="1">
+        <frame>BoomBox_Cassette_Teeth00.png</frame>
+    </animation>
+    
+    <animation name="tapeTeethTurn" fps="8">
+        <frame>BoomBox_Cassette_Teeth00.png</frame>
+        <frame>BoomBox_Cassette_Teeth01.png</frame>
+    </animation>
 
 </AnimationData>

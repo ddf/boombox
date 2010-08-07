@@ -67,6 +67,8 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
   {
     if ( mGaveJam == false )
     {
+        mMyJam.update( dt );
+        
         boolean canHear = mJamArea.pointInside( player.getPos() );
         
         if ( canHear )
