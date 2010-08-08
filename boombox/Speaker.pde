@@ -6,7 +6,10 @@ void loadSpeakerImages()
 {
   speakerBox = loadImage("SpeakerBox.png");
   speakerConeTop = loadImage("SpeakerTopCone.png");
-  speakerConeBottom = loadImage("SpeakerBottomCone.png");
+  //speakerConeTop = loadImage("TopSpeaker.gif");
+  //speakerConeBottom = loadImage("SpeakerBottomCone2.png");
+  speakerConeBottom = loadImage("BottomSpeaker.gif");
+  //speakerConeBottom = loadImage("bottomspeakergrey.png");
 }
 
 class Speaker
@@ -26,7 +29,7 @@ class Speaker
     {
       translate( mPos.x, mPos.y );
       scale( mScale );
-      tint( 255 );
+      noTint(); 
       imageMode( CENTER );
       image( speakerBox, 0, -speakerBox.height / 2.f, speakerBox.width, speakerBox.height );
       float coneScale = 1.f + mainOut.mix.level() * 0.8f;

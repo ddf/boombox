@@ -6,9 +6,17 @@ class GameplayScreen
   // what is my camera's offset from where it started?
   float cameraOffset = 0;
   
+  ArrayList<Star> mStars;
+  
   GameplayScreen()
   {
       cameraPosition = width/2;
+      mStars = new ArrayList<Star>();
+  }
+  
+  void addStar(float x, float y)
+  {
+    mStars.add( new Star(x, y) );
   }
   
   void update( float dt )
@@ -23,6 +31,15 @@ class GameplayScreen
     theStage.update( dt );
     player.update( dt );
     inventory.update( dt );
+    
+    Iterator<Star> iter = mStars.iterator();
+    while( iter.hasNext() )
+    {
+      if ( iter.next().update(dt) )
+      {
+        iter.remove();
+      }
+    }
   
     float playerX = player.getPos().x;
     float distToCamera = abs( playerX - cameraPosition );
@@ -59,9 +76,11 @@ class GameplayScreen
     float lowPassCut = lowPass.frequency();
     float r = map( lowPassCut, lowPassCutoffHi, lowPassCutoffLo, 24, 0 );
     float g = r;
-    float b = map( lowPassCut, lowPassCutoffHi, lowPassCutoffLo, 24, 30 );
+    float b = map( lowPassCut, lowPassCutoffHi, lowPassCutoffLo, 24, 60 );
     
     background( r, g, b );
+    
+    //  camara viz
     //  fill(255,0,0);
     //  noStroke();
     //  rectMode(CENTER);
@@ -111,6 +130,12 @@ class GameplayScreen
       {
         e.draw();
       }
+    }
+    
+    Iterator<Star> siter = mStars.iterator();
+    while( siter.hasNext() )
+    {
+      siter.next().draw();
     }
   
     translate( cameraPosition - width/2, 0, 0 );

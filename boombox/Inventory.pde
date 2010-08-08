@@ -38,6 +38,11 @@ class Inventory
     mCurrTime = mLerpTime;
     open();
   }
+  
+  boolean isFull()
+  {
+    return mJams.size() == allJams.size() - 1 || key == 'C';
+  }
 
   void update( float dt )
   {

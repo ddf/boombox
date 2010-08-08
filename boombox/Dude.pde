@@ -147,6 +147,9 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
       mGaveJam = true;
       player.collect();
       jamSyncer.removeLoopListener( this );
+      
+      // spawn a star!
+      gameplayScreen.addStar( mPos.x, mPos.y - 100 );
     }
   }
   
@@ -186,12 +189,12 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
       stroke(0);
       strokeWeight(2);
       fill(255);
-      rect( pos.x + 5, pos.y - 75, 5, 5 );
-      rect( pos.x + 15, pos.y - 95, 10, 10 );
+      rect( pos.x + 5, pos.y - 55, 5, 5 );
+      rect( pos.x + 10, pos.y - 68, 10, 10 );
       
       float bubbleWidth = getTapeWidth() * mWantToHear.length + 5 * mWantToHear.length + 10;
       float bubbleHeight = getTapeHeight() + 30;
-      float bubbleCenterY = pos.y - 140;
+      float bubbleCenterY = pos.y - 105;
       rect( pos.x, bubbleCenterY, bubbleWidth, bubbleHeight );
       
       // these are the tapes in the bubble

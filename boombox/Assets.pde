@@ -60,6 +60,7 @@ class AssetLoader implements Runnable
       TAPE = loadImage("BoomBox_Cassette_No_Teeth.png");
       
       loadSpeakerImages();
+      loadStarImages();
       
       float tempo = 121.f;
       float beatPerSec = 60.f / tempo;
@@ -94,18 +95,18 @@ class AssetLoader implements Runnable
       allJams = new ArrayList<Jam>();
     
       allJams.add( new Jam("backing_loop.wav", JamCategory.OTHER, color(0,0,0), -100, -100 ) );
-      allJams.add( new Jam("drums_LP01.wav", JamCategory.DRUMS, #00FFFF, 580, 120) );
-      allJams.add( new Jam("bass_LP01.wav", JamCategory.BASS, #FFA500, 600, 400) );
-      allJams.add( new Jam("blip_LP01.wav", JamCategory.BLIP, #FFFF00, 200, 600) );
-      allJams.add( new Jam("pad_LP04.wav", JamCategory.PAD, #008000, 100, 450) );
-      allJams.add( new Jam("drums_LP02.wav", JamCategory.DRUMS, #0000FF, 580, 120) );
-      allJams.add( new Jam("chords_LP02.wav", JamCategory.CHORD, #4B0082, 600, 400) );
-      allJams.add( new Jam("blip_LP02.wav", JamCategory.BLIP, #EE82EE, 200, 600) );
-      allJams.add( new Jam("pad_LP02.wav", JamCategory.PAD, #EEEEEE, 100, 450) );
-      allJams.add( new Jam("drums_LP03.wav", JamCategory.DRUMS, #990000, 580, 120) );
-      allJams.add( new Jam("bass_LP03.wav", JamCategory.BASS, #5F70FF, 600, 400) );
-      allJams.add( new Jam("blip_LP03.wav", JamCategory.BLIP, #222222, 200, 600) );
-      allJams.add( new Jam("blip_LP05.wav", JamCategory.BLIP, #00FF00, 100, 450) );
+      allJams.add( new Jam("drums_LP01.wav",   JamCategory.DRUMS, #01e4ff,      580, 120) );
+      allJams.add( new Jam("bass_LP01.wav",    JamCategory.BASS,  #77da6f,      600, 400) );
+      allJams.add( new Jam("blip_LP01.wav",    JamCategory.BLIP,  #ffffff,      200, 600) );
+      allJams.add( new Jam("pad_LP04.wav",     JamCategory.PAD,   #a966cf,      100, 450) );
+      allJams.add( new Jam("drums_LP02.wav",   JamCategory.DRUMS, #28a0ae,      580, 120) );
+      allJams.add( new Jam("chords_LP02.wav",  JamCategory.CHORD, #212bc0,      600, 400) );
+      allJams.add( new Jam("blip_LP02.wav",    JamCategory.BLIP,  #ffee33,      200, 600) );
+      allJams.add( new Jam("pad_LP02.wav",     JamCategory.PAD,   #292928,      100, 450) );
+      allJams.add( new Jam("drums_LP03.wav",   JamCategory.DRUMS, #d93c65,      580, 120) );
+      allJams.add( new Jam("bass_LP03.wav",    JamCategory.BASS,  #fe867d,      600, 400) );
+      allJams.add( new Jam("blip_LP03.wav",    JamCategory.BLIP,  #e7a858,      200, 600) );
+      allJams.add( new Jam("blip_LP05.wav",    JamCategory.BLIP,  #f4be2e,      100, 450) );
     
       worldJams = new ArrayList<Jam>();
     
@@ -118,9 +119,9 @@ class AssetLoader implements Runnable
     
       worldEffects = new ArrayList<EffectPickup>();
     
-      worldEffects.add( new EffectPickup( new LineSweep( lowPassCutoff, lowPassCutoffHi, lowPassCutoffLo, lowPassCutoffSweepLength ), 800, 450, #CCCCCC ) );
-      worldEffects.add( new EffectPickup( new Bypasser( granulateBypass ), 1350, 400, #FF0000 ) );
-      worldEffects.add( new EffectPickup( new SampleRepeat( sampleRepeat ), 3150, 410, #00AA00 ) );
+      worldEffects.add( new EffectPickup( new LineSweep( lowPassCutoff, lowPassCutoffHi, lowPassCutoffLo, lowPassCutoffSweepLength ), 800, 450, #afa38b ) );
+      worldEffects.add( new EffectPickup( new Bypasser( granulateBypass ), 1350, 400, #ffffff ) );
+      worldEffects.add( new EffectPickup( new SampleRepeat( sampleRepeat ), 3150, 410, #67606b ) );
     
       player = new Avatar( 50, height - 100 );
     

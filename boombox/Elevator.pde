@@ -38,12 +38,42 @@ class Elevator
   
   void draw()
   { 
-    rectMode(CORNERS);
-    stroke(0);
-    strokeWeight(2);
-    fill(mColor);
+    rectMode(CORNER);
     Rectangle.Bounds bounds = mRect.getBounds();
-    rect( bounds.minX, bounds.minY, bounds.maxX, bounds.maxY + 10 );
+//    stroke(0);
+//    strokeWeight(2);
+//    rect( bounds.minX, bounds.minY, bounds.maxX, bounds.maxY + 10 );
+
+    noStroke();
+    float totalWidth = bounds.maxX - bounds.minX;
+    float totalHeight = bounds.maxY - bounds.minY;
+    float barWidth = (totalWidth - 12) * 0.25f;
+    float spacer = 12 / 3;
+    for(int i = 0; i < 4; ++i)
+    {
+      float xOff = i * (barWidth + spacer);
+      
+      fill(mColor);
+      rect( bounds.minX + xOff, bounds.minY, barWidth, totalHeight );
+      
+      int dark = 34;
+      int alph = 128;
+      float minX = bounds.minX + xOff;
+      float maxX = minX + barWidth;
+      float minY = bounds.maxY;
+      float maxY = mMaxY + totalHeight;
+      beginShape( QUADS );
+        fill( mColor, alph );
+        vertex( minX, minY );
+        fill( mColor, 0 );
+        vertex( minX, maxY );
+        vertex( maxX, maxY );
+        fill( mColor, alph );
+        vertex( maxX, minY );
+      endShape();
+        
+      //rect( bounds.minX + xOff, bounds.maxY, barWidth, mMaxY + totalHeight - bounds.maxY );
+    }
     
     // our "collision"
     if ( DRAW_COLLISION )

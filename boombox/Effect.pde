@@ -1,10 +1,12 @@
 // you can pick up effects, just like jams, but they make the audio sound different, instead of adding new audio.
 
 PImage EFFECT = null;
+PImage EFFECT_ON = null;
 
 void loadEffectImage()
 {
-  EFFECT = loadImage("effect.png");
+  EFFECT = loadImage("Pedal.png");
+  EFFECT_ON = loadImage("Pedal_RedLight.png");
 }
 
 interface Effect 
@@ -24,9 +26,9 @@ class EffectPickup
   EffectPickup( Effect e, float x, float y, color c )
   {
     mPos = new PVector(x, y);
-    mWidth = EFFECT.width * 1.5f;
+    mWidth = EFFECT.width;
     mHeight = EFFECT.height;
-    mScale = 0.5f;
+    mScale = 1f;
     mColor = c;
     mIsActive = false;
     mEffect = e;
@@ -100,11 +102,14 @@ class EffectPickup
     
     if ( isActive() )
     {
-      stroke(255);
-      strokeWeight(2);
-      fill(0);
-      rectMode( CENTER );
-      rect( mPos.x, mPos.y, 10, 10 );
+      noTint();
+      image( EFFECT_ON, mPos.x, mPos.y, getWidth(), getHeight() );
+
+//      stroke(255);
+//      strokeWeight(2);
+//      fill(0);
+//      rectMode( CENTER );
+//      rect( mPos.x, mPos.y, 10, 10 );
     }
   }
 }

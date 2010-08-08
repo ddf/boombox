@@ -3,10 +3,18 @@ class TitleScreen
   PFont titleFont;
   boolean m_active;
   
+  PImage titleImg;
+  PImage loading;
+  PImage clickPlay;
+  
   TitleScreen()
   {
     titleFont = loadFont("ComicSansMS-48.vlw");
     m_active = true;
+    
+    titleImg = loadImage("Title.png");
+    loading = loadImage("Loading.png");
+    clickPlay = loadImage("ClickToPlay.png");
   }
   
   boolean isActive()
@@ -16,22 +24,19 @@ class TitleScreen
   
   void draw()
   {
-    background(24);
+    imageMode(CORNER);
     
-    textAlign(CENTER);
-    textFont( titleFont );
+    image(titleImg, 0, 0);
     
-    textSize(48);
-    text( "BOOMBOX", width/2.f, height/3.f );
+    imageMode(CENTER);
     
-    textSize(24);
     if ( loaderThread.isAlive() )
     {
-      text("Loading...", width/2.f, (height/2.f));
+      image(loading, width/2, height/2 + 50);
     }
     else
     {
-      text("Click to Play", width/2.f, (height/2.f));
+      image(clickPlay, width/2, height/2 + 50);
     }
   }
   
