@@ -139,23 +139,23 @@ class Inventory
       for(int i = 0; i < mEffects.size(); ++i)
       {
         EffectPickup e = mEffects.get(i);
-        println("Testing effect " + i);
+        //println("Testing effect " + i);
         if ( e.pointInside( mouseX, mouseY - mBottom ) )
         {
           if ( e.isActive() == false )
           {
-            println("Activating effect.");
+            //println("Activating effect.");
             e.activate();
           }
           else
           {
-            println("Deactivating effect.");
+            //println("Deactivating effect.");
             e.deactivate();
           }
         }
         else
         {
-          println("Point wasn't inside.");
+          //println("Point wasn't inside.");
         }
       }
     }

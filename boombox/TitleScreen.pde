@@ -42,7 +42,7 @@ class TitleScreen
   
   void mousePressed()
   {
-    if ( loaderThread.isAlive() == false )
+    if ( m_active && loaderThread.isAlive() == false )
     {
       m_active = false;
       jamSyncer.playJam( allJams.get(0) );

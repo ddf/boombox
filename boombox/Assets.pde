@@ -66,7 +66,8 @@ class AssetLoader implements Runnable
       float beatPerSec = 60.f / tempo;
     
       minim = new Minim(m_parent);
-      mainOut = minim.getLineOut( Minim.STEREO, 512 );
+      // minim.debugOn();
+      mainOut = minim.getLineOut( Minim.STEREO, 1024 );
       jamSyncer = new JamSyncer( tempo );
       sampleRepeat = new SampleAndRepeat( tempo, 0.5f );
       float grainRatio = 0.03f;

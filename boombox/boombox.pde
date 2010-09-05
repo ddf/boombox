@@ -15,8 +15,6 @@ import ddf.minim.spi.*;
 
 import net.compartmental.contraptions.*;
 
-import processing.opengl.*;
-
 boolean DRAW_COLLISION = false;
 color   COLLISION_COLOR = color(0, 255, 0, 128);
 
@@ -26,7 +24,7 @@ GameplayScreen gameplayScreen;
 
 void setup()
 {
-  size(640, 480, OPENGL);
+  size(640, 480, P3D);
   
   loaderThread = new Thread( new AssetLoader(this) );
   loaderThread.start();
@@ -48,6 +46,9 @@ void draw()
     gameplayScreen.update( dt );
     gameplayScreen.draw();
   }
+  
+//  fill( 255 );
+//  text( frameRate + "", 10, 20 );
 }
 
 void mousePressed()
