@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<Character>
+
+	<!-- events can be triggered externally or internally -->
+	<!-- whether or not anything happens -->
+	<!-- depends on whether or not there is a legal transition -->
+	<!-- that responds to that event -->
+	<event name="idle"/>
+	<event name="play"/>
+	<event name="eject"/>
+	<event name="jam"/>
+	<event name="nojam"/>
+	<event name="yesjam"/>
+	
+	<!-- internal -->
+	<event name="jam_loop"/>
+	<event name="jam_to_idle"/>
+
+	<!-- a behavior defines a set of clips -->
+	<!-- and transitions between them -->
+	<!-- it can also contain other behaviors -->
+	<behavior name="root" defaultState="idle">
+	
+		<!-- clips just play animations -->
+		<!-- the animation names refer -->
+		<!-- to animations loaded by -->
+		<!-- the AnimationSystem this -->
+		<!-- character is created with -->
+		
+		<clip name="idle" animation="idle"/>
+		
+		<clip name="play" animation="play">
+			<trigger event="idle" time="1.0"/>
+		</clip>
+		
+		<clip name="eject" animation="eject">
+			<trigger event="idle" time="1.0"/>
+		</clip>
+		
+		<clip name="nojam" animation="nojam"/>
+		
+		<clip name="yesjam" animation="yesjam">
+			<trigger event="play" time="1.0"/>
+		</clip>
+		
+		<clip name="to_jam" animation="idle_to_jam">
+			<trigger event="jam_loop" time="1.0"/>
+		</clip>
+		
+		<clip name="jam" animation="jamming"/>
+		
+		<clip name="jam_to_idle" animation="idle_to_jam">
+			<trigger event="jam_to_idle" time="1.0"/>
+		</clip>
+		
+		<!-- transitions define allowed flow -->
+		<!-- they are triggered by events -->
+		
+		<transition from="idle" to="play" event="play"/>
+		<transition from="play" to="idle" event="idle"/>
+		<transition from="play" to="jam" event="jam"/>
+		
+		<transition from="idle" to="eject" event="eject"/>
+		<transition from="eject" to="idle" event="idle"/>
+		
+		<transition from="idle" to="nojam" event="nojam"/>
+		
+		<transition from="idle" to="yesjam" event="yesjam"/>
+		<transition from="yesjam" to="play" event="play"/>
+		
+		<transition from="nojam" to="yesjam" event="yesjam"/>
+		<transition from="nojam" to="idle" event="idle"/>
+		
+		<transition from="idle" to="to_jam" event="jam"/>
+		
+		<transition from="to_jam" to="jam" event="jam_loop"/>
+		<transition from="jam" to="jam_to_idle" event="idle"/>
+		<transition from="jam" to="eject" event="eject"/>
+		<transition from="jam_to_idle" to="idle" event="jam_to_idle"/>
+		
+	</behavior>
+	
+</Character>

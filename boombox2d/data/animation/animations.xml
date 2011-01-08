@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<AnimationData baseDirectory="animation" >
+
+	<animation name="idle" fps="15">
+		<frame>idle0000.png</frame>
+        <frame>idle0001.png</frame>
+        <frame>idle0002.png</frame>
+        <frame>idle0003.png</frame>
+        <frame>idle0004.png</frame>
+	</animation>
+    
+    <animation name="idle_to_jam" fps="15">
+        <frame>idle_to_jam0000.png</frame>
+    </animation>
+
+	<animation name="walk" fps="15">
+        <frame>walk0000.png</frame>
+        <frame>walk0001.png</frame>
+        <frame>walk0002.png</frame>
+        <frame>walk0003.png</frame>
+        <frame>walk0004.png</frame>
+        <frame>walk0005.png</frame>
+        <frame>walk0006.png</frame>
+        <frame>walk0007.png</frame>
+	</animation>
+
+	<animation name="collect" fps="15">
+		<frame>collect_jam0000.png</frame>
+        <frame>collect_jam0001.png</frame>
+        <frame>collect_jam0002.png</frame>
+        <frame>collect_jam0003.png</frame>
+        <frame>collect_jam0004.png</frame>
+        <frame>collect_jam0005.png</frame>
+        <frame>collect_jam0006.png</frame>
+        <frame>collect_jam0007.png</frame>
+        <frame>collect_jam0008.png</frame>
+        <frame>collect_jam0009.png</frame>
+        <frame>collect_jam0010.png</frame>
+	</animation>
+
+	<animation name="play" fps="15">
+		<frame>play_jam0000.png</frame>
+        <frame>play_jam0001.png</frame>
+        <frame>play_jam0002.png</frame>
+        <frame>play_jam0003.png</frame>
+        <frame>play_jam0004.png</frame>
+        <frame>play_jam0005.png</frame>
+        <frame>play_jam0006.png</frame>
+        <frame>play_jam0007.png</frame>
+        <frame>play_jam0008.png</frame>
+	</animation>
+
+	<animation name="eject" fps="15">
+		<frame>eject_jam0000.png</frame>
+        <frame>eject_jam0001.png</frame>
+        <frame>eject_jam0002.png</frame>
+        <frame>eject_jam0003.png</frame>
+        <frame>eject_jam0004.png</frame>
+        <frame>eject_jam0005.png</frame>
+        <frame>eject_jam0006.png</frame>
+        <frame>eject_jam0007.png</frame>
+        <frame>eject_jam0008.png</frame>
+	</animation>
+
+	<animation name="jamming" fps="15">
+        <frame>jamming0000.png</frame>
+        <frame>jamming0001.png</frame>
+        <frame>jamming0002.png</frame>
+        <frame>jamming0003.png</frame>
+        <frame>jamming0004.png</frame>
+        <frame>jamming0005.png</frame>
+        <frame>jamming0006.png</frame>
+        <frame>jamming0007.png</frame>
+        <frame>jamming0008.png</frame>
+        <frame>jamming0009.png</frame>
+        <frame>jamming0010.png</frame>
+        <frame>jamming0011.png</frame>
+	</animation>
+
+	<animation name="nojam" fps="15">
+        <frame>no_jam0000.png</frame>
+        <frame>no_jam0001.png</frame>
+        <frame>no_jam0002.png</frame>
+        <frame>no_jam0003.png</frame>
+        <frame>no_jam0004.png</frame>
+        <frame>no_jam0005.png</frame>
+        <frame>no_jam0006.png</frame>
+        <frame>no_jam0007.png</frame>
+        <frame>no_jam0008.png</frame>
+	</animation>
+    
+    <animation name="yesjam" fps="15">
+        <frame>yes_jam0000.png</frame>
+        <frame>yes_jam0001.png</frame>
+        <frame>yes_jam0002.png</frame>
+        <frame>yes_jam0003.png</frame>
+        <frame>yes_jam0004.png</frame>
+        <frame>yes_jam0005.png</frame>
+        <frame>yes_jam0006.png</frame>
+        <frame>yes_jam0007.png</frame>
+        <frame>yes_jam0008.png</frame>
+    </animation>
+    
+    <animation name="tapeTeethStill" fps="1">
+        <frame>BoomBox_Cassette_Teeth00.png</frame>
+    </animation>
+    
+    <animation name="tapeTeethTurn" fps="8">
+        <frame>BoomBox_Cassette_Teeth00.png</frame>
+        <frame>BoomBox_Cassette_Teeth01.png</frame>
+    </animation>
+
+</AnimationData>
