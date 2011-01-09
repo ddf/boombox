@@ -80,7 +80,7 @@ class Jam extends UGen
   private float[] mRightChannel;
   private int     mSampleNum;
   private boolean mPaused;
-  private Rectangle mCollision;
+  private Body    mBody; // physical body in the world. only used for picking it up.
   
   private JamCategory mCategory;
 
@@ -98,6 +98,8 @@ class Jam extends UGen
     mRightChannel = sample.getChannel( BufferedAudio.RIGHT );
     mSampleNum = 0;
     mPaused = true;
+    
+    mBody = null;
   }
   
   public int compareTo( Jam j )
@@ -152,6 +154,12 @@ class Jam extends UGen
   void setPos( float x, float y )
   {
     mPos.set( x, y, 0 );
+    
+    if ( mBody != null )
+    {
+      Vec2 worldPos = gPhysics.screenToWorld( mPos.x, mPos.y );
+      mBody.setXForm( worldPos, 0.f );
+    }
   }
 
   PVector getPos()
@@ -164,9 +172,22 @@ class Jam extends UGen
     mScale = s;
   }
   
-  Rectangle getCollisionRectangle()
+  Body getBody()
   {
-    return new Rectangle( mPos.x, mPos.y, getWidth(), getHeight(), LEFT, TOP ); 
+    return mBody;
+  }
+  
+  void createBody()
+  {
+    gPhysics.setSensor( true );
+    mBody = gPhysics.createRect( mPos.x - getWidth() * 0.5f, mPos.y - getHeight() * 0.5f, mPos.x + getWidth() * 0.5f, mPos.y + getHeight() * 0.5f );
+    gPhysics.setSensor( false );
+  }
+  
+  void destroyBody()
+  {
+    gPhysics.removeBody( mBody );
+    mBody = null;
   }
 
   float getWidth()

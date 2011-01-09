@@ -103,9 +103,11 @@ class GameplayScreen
     {
       Jam j = iter.next();
   
-      if ( player.getCollisionRectangle().collidesWith( j.getCollisionRectangle() ) )
+      if ( player.getBody().isTouching( j.getBody() ) )
       {
         iter.remove();
+        // pick it up.
+        j.destroyBody();
         inventory.addJam( j );
         player.collect();
       }
@@ -120,13 +122,13 @@ class GameplayScreen
     {
       EffectPickup e = eiter.next();
   
-      if ( player.getCollisionRectangle().collidesWith( e.getCollisionRectangle() ) )
-      {
-        eiter.remove();
-        inventory.addEffect( e );
-        player.collect();
-      }
-      else
+//      if ( player.getCollisionRectangle().collidesWith( e.getCollisionRectangle() ) )
+//      {
+//        eiter.remove();
+//        inventory.addEffect( e );
+//        player.collect();
+//      }
+//      else
       {
         e.draw();
       }
@@ -138,7 +140,7 @@ class GameplayScreen
       siter.next().draw();
     }
     
-    gPhysics.defaultDraw( gPhysics.getWorld() );
+    // gPhysics.defaultDraw( gPhysics.getWorld() );
   
     translate( cameraPosition - width/2, 0, 0 );
   

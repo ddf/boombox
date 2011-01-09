@@ -1,6 +1,7 @@
 // an Elevator is an audio-reactive platform
 class Elevator
 {
+  private Body mBody; // area inside of which we will bump the player into the air.
   private Rectangle mRect;
   private float     mX, mMinY, mMaxY;
   private EnvelopeFollower mFollower;
@@ -9,6 +10,10 @@ class Elevator
   Elevator( float x, float y, float maxVertDisp, Jam jamToFollow )
   {
     mRect = new Rectangle( x, y, 100, 10, CENTER, TOP );
+    gPhysics.setSensor( true );
+    Rectangle.Bounds b = mRect.getBounds();
+    mBody = gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
+    gPhysics.setSensor( false );
     mX = x;
     mMaxY = y;
     mMinY = mMaxY - maxVertDisp;
@@ -26,14 +31,20 @@ class Elevator
   {
     float y = constrain( mMaxY - mFollower.getLastValues()[0] * 10000.f, mMinY, mMaxY );
     
-    PVector playerPos = player.getPos();
-    if ( mRect.pointInside( playerPos ) )
-    {
-      float deltaY = y - mRect.getPos().y;
-      player.setYPos( playerPos.y + deltaY );
-    }
+//    PVector playerPos = player.getPos();
+//    if ( mRect.pointInside( playerPos ) )
+//    {
+//      float deltaY = y - mRect.getPos().y;
+//      player.setYPos( playerPos.y + deltaY );
+//    }
     
     mRect.setPos( mX, y );
+    
+    if ( y < mMaxY && mBody.isTouching( player.getBody() ) )
+    {
+      println("Bumping player!");
+      gPhysics.applyForce( player.getBody(), new Vec2( 0.f, 30000.f ) );
+    }
   }
   
   void draw()

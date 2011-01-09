@@ -40,28 +40,38 @@ class Stage
     mSpeakers = new ArrayList<Speaker>();
 
     float topOfGround = horizonHeight + 5;
+    float jamOnGround = topOfGround - getTapeHeight() * 0.5f;
+    float elevatorOnGround = topOfGround - 10;
+    
+    // make the ground
+    {
+      theGround = new Rectangle( 0, topOfGround, 2150, height - horizonHeight - 15, LEFT, TOP );
+      moreGround = new Rectangle( 2400, topOfGround, 1500, height - horizonHeight - 15, LEFT, TOP );
 
-    theGround = new Rectangle( 0, topOfGround + 8, 2150, height - horizonHeight - 15, LEFT, TOP );
-    moreGround = new Rectangle( 2400, topOfGround + 8, 1500, height - horizonHeight - 15, LEFT, TOP );
+      mCollision.add( theGround );
+      mCollision.add( moreGround );
+      
+      gPhysics.setDensity( 0.f );
+           
+      Rectangle.Bounds b = theGround.getBounds();
+      gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
+      
+      b = moreGround.getBounds();
+      gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
 
-    mCollision.add( theGround );
-    mCollision.add( moreGround );
-
-    currCollision = theGround;
+      currCollision = theGround;
+    }
 
     { 
-      allJams.get(1).setPos( 230, 410 );
+      allJams.get(1).setPos( 200, jamOnGround );
 
-      Dude dude = new Dude( 410, 420, new Jam[] { 
-        allJams.get(1)
-      }
-      , allJams.get(2) );
+      Dude dude = new Dude( 300, topOfGround, new Jam[] { allJams.get(1) }, allJams.get(2) );
       mDudes.add( dude );
 
       // this goes on the platform
       allJams.get(3).setPos( 440, 150 );
       Rectangle platform = makePlatform( 400, 160, 460 );
-      Elevator elevator = new Elevator( 910, topOfGround, topOfGround - 160, allJams.get(2) ); 
+      Elevator elevator = new Elevator( 910, elevatorOnGround, elevatorOnGround - 160, allJams.get(2) ); 
 
       connect( theGround, elevator );
       connect( elevator, platform );
@@ -80,7 +90,7 @@ class Stage
       mDudes.add( dudeGround );
       mDudes.add( dudePlatform );
 
-      allJams.get(5).setPos( 1500, 450 );
+      allJams.get(5).setPos( 1500, jamOnGround );
 
       Rectangle platform = makePlatform( 1200, 220, 400 );
       Elevator elevLeft = new Elevator( 1150, topOfGround, topOfGround - 220, allJams.get(4) );
@@ -102,7 +112,7 @@ class Stage
     }
 
     {
-      allJams.get(11).setPos( 2000, 400 );
+      allJams.get(11).setPos( 2000, jamOnGround );
 
       Rectangle platform = makePlatform( 2100, 220, 350 );
       Elevator elevLeft = new Elevator( 2050, topOfGround, topOfGround - 220, allJams.get(5) );
@@ -124,7 +134,7 @@ class Stage
     }
 
     {
-      allJams.get(8).setPos( 2850, 400 );
+      allJams.get(8).setPos( 2850, jamOnGround );
 
       Dude dudeGround = new Dude( 2550, 470, new Jam[] { allJams.get(3), allJams.get(6), allJams.get(8) }, allJams.get(7) );
       Dude dudePlatform = new Dude( 3075, 225, new Jam[] { allJams.get(9), allJams.get(2), allJams.get(11), allJams.get(4), allJams.get(8) }, allJams.get(12) );
@@ -189,6 +199,9 @@ class Stage
     Rectangle platform = new Rectangle( x, y, w, 8, LEFT, TOP );
     mPlatforms.add( platform );
     mCollision.add( platform );
+    
+    Rectangle.Bounds b = platform.getBounds();
+    gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
 
     return platform;
   }
@@ -494,31 +507,14 @@ class Stage
       mElevators.get(i).draw();
     }
 
-    // sort DUDES and Player
+    // draw DUDES and Player
     {
-      ArrayList<Dude> dudesBehind = new ArrayList<Dude>();
-      ArrayList<Dude> dudesInFront = new ArrayList<Dude>();
       for(int i = 0; i < mDudes.size(); i++)
       {
-        if ( mDudes.get(i).getPos().y <= player.getPos().y )
-        {
-          dudesBehind.add( mDudes.get(i) );
-        }
-        else
-        {
-          dudesInFront.add( mDudes.get(i) );
-        }
+        mDudes.get(i).draw();
       }
-
-      for(int i = 0; i < dudesBehind.size(); i++)
-      {
-        dudesBehind.get(i).draw();
-      }
+      
       player.draw();
-      for(int i = 0; i < dudesInFront.size(); i++)
-      {
-        dudesInFront.get(i).draw();
-      }
     }
 
     // finally shadow pass

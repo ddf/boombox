@@ -98,6 +98,8 @@ class AssetLoader implements Runnable
       tapeStop.setGain( 2.f );
       
       gPhysics = new Physics(boombox2d.this, width * 4, height);
+      // immediately unregister it so the main thread doesn't try to tick it while we are building the world.
+      boombox2d.this.unregisterDraw( gPhysics );
       gPhysics.setCustomRenderingMethod( boombox2d.this, "debugDrawForPhysics" );
     
       allJams = new ArrayList<Jam>();
@@ -136,5 +138,13 @@ class AssetLoader implements Runnable
       mouse = new Mouse();
       inventory = new Inventory();
       theStage = new Stage();
+      
+      // create bodies for all the world jams
+      for(int i = 0; i < worldJams.size(); ++i)
+      {
+        worldJams.get(i).createBody();
+      }
+      
+      boombox2d.this.registerDraw( gPhysics );
   }
 }

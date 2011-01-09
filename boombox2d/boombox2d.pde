@@ -5,7 +5,6 @@ import org.jbox2d.common.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.p5.*;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.testbed.tests.character.*;
 
 /** 
  * Boombox with JBox2D for physics.

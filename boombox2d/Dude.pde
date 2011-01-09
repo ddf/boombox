@@ -4,24 +4,25 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
   // our visible rectangle
   private Rectangle mRect;
   // have to be inside this one to jam
-  private Rectangle mJamArea;
+  private Body mJamArea;
   // the jams this dude wants to jam with
   private Jam[]   mWantToHear;
   // the jam this dude will play and then give away
   private Jam     mMyJam;
   // have I already jammed?
-  boolean         mJammed;
+  private boolean         mJammed;
   // how many times my jam has looped
   private int     mLoops;
   
   // is the player close enough to jam?
-  boolean         mCanJam;
+  private boolean         mCanJam;
   // did I give my jam away
-  boolean         mGaveJam;
+  private boolean         mGaveJam;
   
   private PVector mPos;
   
   private AnimationStateMachine mAnims;
+  
   
   // different animations
   static final int IDLE = 0;
@@ -32,7 +33,11 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
   {
     mPos = new PVector(x, y);
     mRect = new Rectangle( x, y, 64, 64, CENTER, BOTTOM );
-    mJamArea = new Rectangle( x, y, 256, 64, CENTER, CENTER );
+    Rectangle jamRect = new Rectangle( x, y, 256, 64, CENTER, BOTTOM );
+    gPhysics.setSensor( true );
+    Rectangle.Bounds b = jamRect.getBounds();
+    mJamArea = gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
+    gPhysics.setSensor( false );
     mWantToHear = wantToHear;
     mMyJam = toPlay;
     
@@ -69,7 +74,7 @@ class Dude implements LoopListener, AnimationStateMachine.EventListener
     {
         mMyJam.update( dt );
         
-        boolean canHear = mJamArea.pointInside( player.getPos() );
+        boolean canHear = mJamArea.isTouching( player.getBody() );
         
         if ( canHear )
         {

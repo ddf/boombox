@@ -19,12 +19,14 @@ class Avatar
     gPhysics.setDensity( 1.f );
     gPhysics.setFriction( 0.f );
     gPhysics.setRestitution( 0.f );
+    gPhysics.setFixedRotation( true );
     mBody = gPhysics.createRect( xPos - getWidth() * 0.3f, 
                                  yPos - getHeight(), 
                                  xPos + getWidth() * 0.3f,
                                  yPos
                                 );
     mBody.allowSleeping( false );
+    gPhysics.setFixedRotation( false );
   }
 
   void setXDir( int dir )
@@ -72,9 +74,9 @@ class Avatar
     return new PVector( mPos.x, mPos.y );
   }
 
-  Rectangle getCollisionRectangle()
+  Body getBody()
   {
-    return new Rectangle( mPos.x, mPos.y, getWidth() * 0.8f, getHeight() * 0.8f, CENTER, BOTTOM );
+    return mBody;
   }
 
   float getWidth()
@@ -91,15 +93,15 @@ class Avatar
   { 
     String currentAnim = mAnims.getCurrentStateName();
 
+    Vec2 currentVel = mBody.getLinearVelocity();
     if ( currentAnim.equals( "idle" ) || currentAnim.equals( "walk" ) )
     {
       PVector dir = new PVector( mXDir, mYDir );
       dir.normalize();
       dir.mult( mSpeed * dt );
      
-      Vec2 vel = mBody.getLinearVelocity();
-      vel.x = 20.f * mXDir;
-      mBody.setLinearVelocity( vel );
+      currentVel.x = 20.f * mXDir;
+      mBody.setLinearVelocity( currentVel );
 
       // where we hope to wind up
       //PVector newPos = new PVector( mPos.x + dir.x, mPos.y + dir.y );
@@ -118,6 +120,11 @@ class Avatar
       }
 
       mPos.set( newPos );
+    }
+    else
+    {
+      currentVel.x = 0.f;
+      mBody.setLinearVelocity( currentVel );
     }
 
     mAnims.update( dt );
