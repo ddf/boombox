@@ -122,13 +122,15 @@ class GameplayScreen
     {
       EffectPickup e = eiter.next();
   
-//      if ( player.getCollisionRectangle().collidesWith( e.getCollisionRectangle() ) )
-//      {
-//        eiter.remove();
-//        inventory.addEffect( e );
-//        player.collect();
-//      }
-//      else
+      if ( player.getBody().isTouching( e.getBody() ) )
+      {
+        eiter.remove();
+        // pick it up.
+        e.destroyBody();
+        inventory.addEffect( e );
+        player.collect();
+      }
+      else
       {
         e.draw();
       }
@@ -140,7 +142,40 @@ class GameplayScreen
       siter.next().draw();
     }
     
-    // gPhysics.defaultDraw( gPhysics.getWorld() );
+    // physics drawing
+    if ( true )
+    {
+      gPhysics.defaultDraw( gPhysics.getWorld() );
+      
+      // we want to draw all of the contacts that involve the player's box.
+      Set<Contact> contacts = player.getBody().getShapeList().getContacts();
+      for( Contact c : contacts )
+      {
+        if ( c.m_shape1.isSensor() || c.m_shape2.isSensor() ) continue;
+        
+        List<Manifold> manifolds = c.getManifolds();
+        for( Manifold m : manifolds )
+        {
+          for( int i = 0; i < m.pointCount; ++i )
+          {
+            ManifoldPoint p = m.points[i];
+            Vec2 localPoint = p.localPoint1;
+            if ( c.m_shape2 == player.getBody().getShapeList() )
+            {
+              localPoint = p.localPoint2;
+            }
+            
+            Vec2 worldPoint = gPhysics.worldToScreen( player.getBody().getWorldPoint( localPoint ) );
+            
+            stroke(255, 128, 0);
+            Vec2 worldNormal = m.normal;
+            line( worldPoint.x, worldPoint.y, worldPoint.x + worldNormal.x * 10.f, worldPoint.y + worldNormal.y * 10.f );
+            stroke(255,0,0);
+            point( worldPoint.x, worldPoint.y );
+          }
+        }
+      }
+    }
   
     translate( cameraPosition - width/2, 0, 0 );
   

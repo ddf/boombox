@@ -12,7 +12,7 @@ class Elevator
     mRect = new Rectangle( x, y, 100, 10, CENTER, TOP );
     gPhysics.setSensor( true );
     Rectangle.Bounds b = mRect.getBounds();
-    mBody = gPhysics.createRect( b.minX, b.minY, b.maxX, b.maxY );
+    mBody = gPhysics.createRect( b.minX + 25, b.minY, b.maxX - 25, b.maxY );
     gPhysics.setSensor( false );
     mX = x;
     mMaxY = y;
@@ -42,8 +42,8 @@ class Elevator
     
     if ( y < mMaxY && mBody.isTouching( player.getBody() ) )
     {
-      println("Bumping player!");
-      gPhysics.applyForce( player.getBody(), new Vec2( 0.f, 30000.f ) );
+      // println("Bumping player!");
+      player.applyForce( 0.f, 180000.f );
     }
   }
   

@@ -78,6 +78,16 @@ class Avatar
   {
     return mBody;
   }
+  
+  void applyForce( float x, float y )
+  {
+    String currentAnim = mAnims.getCurrentStateName();
+
+    if ( currentAnim.equals( "idle" ) || currentAnim.equals( "walk" ) )
+    {
+      gPhysics.applyForce( player.getBody(), x, y );
+    }
+  }
 
   float getWidth()
   {
@@ -88,27 +98,66 @@ class Avatar
   {
     return mAnims.currentAnimation().height();
   }
+  
+  boolean isOnGround()
+  {
+    Shape myShape = mBody.getShapeList();
+    Set<Contact> contacts = myShape.getContacts();
+    for (Contact c:contacts) 
+    {
+      Vec2 normal = null;
+      if (c.m_shape1 == myShape && !c.m_shape2.isSensor() ) 
+      {
+        normal = c.getManifolds().get(0).normal.mul(-1);
+      } 
+      else  if ( c.m_shape2 == myShape && !c.m_shape1.isSensor() )
+      {
+        normal = c.getManifolds().get(0).normal.mul(1);
+      }
+      
+      if ( normal != null )
+      {
+        float dot = Vec2.dot(normal, new Vec2(0,1));
+        // println( "Normal is " + normal.x + ", " + normal.y + ". And dot is " + dot);
+        if (dot >= 0.3f)
+        {
+          // we found a ground normal
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  }
 
   void update( float dt )
   { 
     String currentAnim = mAnims.getCurrentStateName();
 
     Vec2 currentVel = mBody.getLinearVelocity();
+    boolean bOnGround = isOnGround();
     if ( currentAnim.equals( "idle" ) || currentAnim.equals( "walk" ) )
-    {
-      PVector dir = new PVector( mXDir, mYDir );
-      dir.normalize();
-      dir.mult( mSpeed * dt );
-     
-      currentVel.x = 20.f * mXDir;
+    {   
+      if ( bOnGround )
+      {
+        currentVel.x = 15.f * mXDir;
+      }
+      else
+      {
+        if ( currentVel.x > 5.f )
+        {
+          currentVel.x *= 0.99f;
+        }
+        else 
+        {
+          currentVel.x = 5.f * mXDir;
+        }
+      }
+      
       mBody.setLinearVelocity( currentVel );
 
-      // where we hope to wind up
-      //PVector newPos = new PVector( mPos.x + dir.x, mPos.y + dir.y );
       Vec2 bodyPos = gPhysics.getPosition( mBody );
       PVector newPos = new PVector( bodyPos.x, bodyPos.y );
-
-      // theStage.constrainMovement( mPos, newPos );
 
       if ( mPos.x == newPos.x && mPos.y == newPos.y )
       {

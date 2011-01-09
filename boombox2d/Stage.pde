@@ -41,7 +41,15 @@ class Stage
 
     float topOfGround = horizonHeight + 5;
     float jamOnGround = topOfGround - getTapeHeight() * 0.5f;
+    float effectOnGround = topOfGround - EFFECT.height * 0.5f;
     float elevatorOnGround = topOfGround - 10;
+    
+    // position effects on the ground
+    for(int i = 0; i < worldEffects.size(); ++i)
+    {
+      PVector pos = worldEffects.get(i).getPos();
+      worldEffects.get(i).setPos( pos.x, effectOnGround );
+    }
     
     // make the ground
     {
@@ -85,7 +93,7 @@ class Stage
     }
 
     {
-      Dude dudeGround = new Dude( 1030, 450, new Jam[] { allJams.get(3) }, allJams.get(4) );
+      Dude dudeGround = new Dude( 1030, topOfGround, new Jam[] { allJams.get(3) }, allJams.get(4) );
       Dude dudePlatform = new Dude( 1500, 220, new Jam[] { allJams.get(2), allJams.get(4) }, allJams.get(6) );
       mDudes.add( dudeGround );
       mDudes.add( dudePlatform );
@@ -93,8 +101,8 @@ class Stage
       allJams.get(5).setPos( 1500, jamOnGround );
 
       Rectangle platform = makePlatform( 1200, 220, 400 );
-      Elevator elevLeft = new Elevator( 1150, topOfGround, topOfGround - 220, allJams.get(4) );
-      Elevator elevRight = new Elevator( 1650, topOfGround, topOfGround - 220, allJams.get(4) );
+      Elevator elevLeft = new Elevator( 1150, elevatorOnGround, elevatorOnGround - 220, allJams.get(4) );
+      Elevator elevRight = new Elevator( 1650, elevatorOnGround, elevatorOnGround - 220, allJams.get(4) );
 
       connect( theGround, elevLeft );
       connect( elevLeft, platform );
@@ -115,8 +123,8 @@ class Stage
       allJams.get(11).setPos( 2000, jamOnGround );
 
       Rectangle platform = makePlatform( 2100, 220, 350 );
-      Elevator elevLeft = new Elevator( 2050, topOfGround, topOfGround - 220, allJams.get(5) );
-      Elevator elevRight = new Elevator( 2500, topOfGround, topOfGround - 220, allJams.get(5) );
+      Elevator elevLeft = new Elevator( 2050, elevatorOnGround, elevatorOnGround - 220, allJams.get(5) );
+      Elevator elevRight = new Elevator( 2500, elevatorOnGround, elevatorOnGround - 220, allJams.get(5) );
 
       connect( theGround, elevLeft );
       connect( elevLeft, platform );
@@ -136,7 +144,7 @@ class Stage
     {
       allJams.get(8).setPos( 2850, jamOnGround );
 
-      Dude dudeGround = new Dude( 2550, 470, new Jam[] { allJams.get(3), allJams.get(6), allJams.get(8) }, allJams.get(7) );
+      Dude dudeGround = new Dude( 2550, topOfGround, new Jam[] { allJams.get(3), allJams.get(6), allJams.get(8) }, allJams.get(7) );
       Dude dudePlatform = new Dude( 3075, 225, new Jam[] { allJams.get(9), allJams.get(2), allJams.get(11), allJams.get(4), allJams.get(8) }, allJams.get(12) );
 
       mDudes.add( dudeGround );
@@ -146,7 +154,7 @@ class Stage
       Rectangle leftPlat = makePlatform( 2675, 125, leftPlatWidth );
       Rectangle rightPlat = makePlatform( 3000, 225, 150 );
 
-      Elevator elevLow = new Elevator( 2625, topOfGround, topOfGround - 125, allJams.get(10) );
+      Elevator elevLow = new Elevator( 2625, elevatorOnGround, elevatorOnGround - 125, allJams.get(10) );
       Elevator elevHigh = new Elevator( 2950, 223, 102, allJams.get(7) );
 
       connect( moreGround, elevLow );
@@ -167,14 +175,14 @@ class Stage
     {
       allJams.get(9).setPos( 3750, 120 );
 
-      Dude dude = new Dude( 3675, 450, new Jam[] { allJams.get(4), allJams.get(5), allJams.get(3) }, allJams.get(10) );
+      Dude dude = new Dude( 3675, topOfGround, new Jam[] { allJams.get(4), allJams.get(5), allJams.get(3) }, allJams.get(10) );
 
       mDudes.add( dude );
 
       Rectangle leftPlat = makePlatform( 3400, 225, 150 );
       Rectangle rightPlat = makePlatform( 3650, 125, 150 );
 
-      Elevator elevLow = new Elevator( 3350, topOfGround, topOfGround - 225, allJams.get(1) );
+      Elevator elevLow = new Elevator( 3350, elevatorOnGround, elevatorOnGround - 225, allJams.get(1) );
       Elevator elevHigh = new Elevator( 3600, 225, 100, allJams.get(6) );
 
       connect( moreGround, elevLow );

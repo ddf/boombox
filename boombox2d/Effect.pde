@@ -17,6 +17,7 @@ interface Effect
 
 class EffectPickup
 {
+  private Body    mBody; // physics representation when in the world
   private PVector mPos;
   private float   mWidth, mHeight, mScale;
   private color   mColor;
@@ -57,6 +58,24 @@ class EffectPickup
     }
   }
   
+  Body getBody()
+  {
+    return mBody;
+  }
+  
+  void createBody()
+  {
+    gPhysics.setSensor( true );
+    mBody = gPhysics.createRect( mPos.x - getWidth() * 0.5f, mPos.y - getHeight() * 0.5f, mPos.x + getWidth() * 0.5f, mPos.y + getHeight() * 0.5f );
+    gPhysics.setSensor( false );
+  }
+  
+  void destroyBody()
+  {
+    gPhysics.removeBody( mBody );
+    mBody = null;
+  }
+  
   void setPos( float x, float y )
   {
     mPos.set( x, y, 0 );
@@ -70,11 +89,6 @@ class EffectPickup
   void setScale( float s )
   {
     mScale = s;
-  }
-  
-  Rectangle getCollisionRectangle()
-  {
-    return new Rectangle( mPos.x, mPos.y, getWidth(), getHeight(), CENTER, CENTER );
   }
 
   float getWidth()

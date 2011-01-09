@@ -97,7 +97,8 @@ class AssetLoader implements Runnable
       tapeStop = minim.loadSample( "tape_stop.wav" );
       tapeStop.setGain( 2.f );
       
-      gPhysics = new Physics(boombox2d.this, width * 4, height);
+      gPhysics = new Physics(boombox2d.this, 3900, height);
+      gPhysics.getWorld().setGravity( new Vec2( 0.f, -60.f ) );
       // immediately unregister it so the main thread doesn't try to tick it while we are building the world.
       boombox2d.this.unregisterDraw( gPhysics );
       gPhysics.setCustomRenderingMethod( boombox2d.this, "debugDrawForPhysics" );
@@ -143,6 +144,12 @@ class AssetLoader implements Runnable
       for(int i = 0; i < worldJams.size(); ++i)
       {
         worldJams.get(i).createBody();
+      }
+      
+      // create bodies for all the world effects
+      for(int i = 0; i < worldEffects.size(); ++i)
+      {
+        worldEffects.get(i).createBody();
       }
       
       boombox2d.this.registerDraw( gPhysics );
